@@ -95,3 +95,10 @@ modules.xml
 /public/build/
 
 .DS_Store
+
+.vs
+.vscode
+/scripts
+/user-folders
+/vendor
+.htaccess
