@@ -1,5 +1,5 @@
 <script>
-    import Welcome from './Welcome.svelte';
+    import AccountSystem from './AccountSystem.svelte';
 </script>
 
 <style>
@@ -10,5 +10,5 @@
 </style>
 
 <div>
-    <Welcome/>
+    <AccountSystem/>
 </div>

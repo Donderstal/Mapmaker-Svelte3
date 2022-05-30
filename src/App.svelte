@@ -9,19 +9,25 @@
 </main>
 
 <style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
-  }
+	@font-face {
+		font-family: 'Stormfaze';
+		src: URL('/static/site_assets/stormfaze.ttf') format('truetype');
+	}
 
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
-  }
+	@font-face {
+		font-family: 'Retro Gaming';
+		src: URL('/static/site_assets/Retro_Gaming.ttf') format('truetype');
+	}
+	main {
+		text-align: center;
+		background: #00384D 0% 0% no-repeat padding-box;
+        opacity: 1;
+		height: 100vh;
+        width: 100vw;
+        text-align: center;
+		font-family: 'Retro Gaming', Fallback, sans-serif;
+		font-size: 3vh;
+	}
 
   @media (min-width: 640px) {
     main {
