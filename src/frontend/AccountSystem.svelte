@@ -9,11 +9,10 @@
 	import Validate from "./views/Validate.svelte";
 	import ResetPassword from './views/ResetPassword.svelte';
 
-	//datamodels
-	import { AccountScreenEnum } from "../models/AccountScreenEnum";
+	//enumerables
+	import { AccountScreenEnum } from "../enumerables/AccountScreenEnum";
 	
 	//login system navigation
-	const accountScreenEnum = new AccountScreenEnum();
 	let activeForm = false;
 
 	//form validation
@@ -51,14 +50,14 @@
 
     const checkIfFormIsValid = ( ) => {
 		switch(activeForm) {
-			case accountScreenEnum.loggingIn:
+			case AccountScreenEnum.loggingIn:
 				return passwordIsDirty && userNameIsDirty;
-			case accountScreenEnum.registering:
+			case AccountScreenEnum.registering:
 				return passwordIsDirty && !passwordIsTooShort && passwordsMatch 
 				&& emailIsValid && emailIsDirty && userNameIsDirty && !userNameIsTooShort;
-			case accountScreenEnum.validating:
+			case AccountScreenEnum.validating:
 				return passwordIsDirty && userNameIsDirty && codeIsDirty;
-			case accountScreenEnum.resettingPassword:
+			case AccountScreenEnum.resettingPassword:
 				return emailIsValid && emailIsDirty && userNameIsDirty;
 			default:
 				return false;
@@ -161,29 +160,29 @@
 	</div>
 	<div class="top-item">
 		<div class="button-container">
-			<Button action={()=>activateForm(accountScreenEnum.loggingIn)} buttonText={"Log In"}/>
+			<Button action={()=>activateForm(AccountScreenEnum.loggingIn)} buttonText={"Log In"}/>
 		</div>
 		<div class="button-container">
-			<Button action={()=>activateForm(accountScreenEnum.validating)} buttonText={"Activate account"}/>
+			<Button action={()=>activateForm(AccountScreenEnum.validating)} buttonText={"Activate account"}/>
 		</div>
 	</div>
 	<div class="bottom-item">
 		<div class="button-container">
-			<Button action={()=>activateForm(accountScreenEnum.registering)} buttonText={"Register"}/>
+			<Button action={()=>activateForm(AccountScreenEnum.registering)} buttonText={"Register"}/>
 		</div>
 		<div class="button-container">
-			<Button action={()=>activateForm(accountScreenEnum.resettingPassword)} buttonText={"Forgot password"}/>
+			<Button action={()=>activateForm(AccountScreenEnum.resettingPassword)} buttonText={"Forgot password"}/>
 		</div>
 	</div>
 	<div class="right-item">
-		{#if activeForm === accountScreenEnum.loggingIn}	
+		{#if activeForm === AccountScreenEnum.loggingIn}	
 			<LogIn 
 				userNameValidator={onUsernameChange}
 				passwordValidator={onPasswordChange}
 
 				showUsernameWarning={showUsernameWarning}
 			/>
-		{:else if activeForm === accountScreenEnum.registering}
+		{:else if activeForm === AccountScreenEnum.registering}
 			<Register
 				userNameValidator={onUsernameChange}
 				emailAddressValidator={onEmailAddressChange}
@@ -195,7 +194,7 @@
 				showPasswordWarning={showPasswordWarning}
 				showConfirmPasswordWarning={showConfirmPasswordWarning}
 			/>
-		{:else if activeForm === accountScreenEnum.validating}
+		{:else if activeForm === AccountScreenEnum.validating}
 			<Validate
 				userNameValidator={onUsernameChange}
 				passwordValidator={onPasswordChange}
@@ -203,7 +202,7 @@
 
 				showUsernameWarning={showUsernameWarning}
 			/>
-		{:else if activeForm === accountScreenEnum.resettingPassword}
+		{:else if activeForm === AccountScreenEnum.resettingPassword}
 			<ResetPassword
 				userNameValidator={onUsernameChange}
 				emailAddressValidator={onEmailAddressChange}
