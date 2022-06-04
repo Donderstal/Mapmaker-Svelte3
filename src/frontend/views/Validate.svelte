@@ -17,7 +17,7 @@
         onChange={passwordValidator} showWarning={false} warningText={""}
     />
     <InputDiv 
-        elementId={"activation-code"} placeholder={"Fill in your code"} type={"text"} labelText={"Activation code:"}
+        elementId={"activation-code-input"} placeholder={"Fill in your code"} type={"text"} labelText={"Activation code:"}
         onChange={secretCodeValidator} showWarning={false} warningText={""}
     />
 </form>

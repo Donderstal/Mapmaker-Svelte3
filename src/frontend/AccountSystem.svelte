@@ -11,6 +11,7 @@
 
 	//enumerables
 	import { AccountScreenEnum } from "../enumerables/AccountScreenEnum";
+	import { onUserLogin } from "../stores";
 	
 	//login system navigation
 	let activeForm = false;
@@ -18,6 +19,7 @@
 	//form validation
 	let invalidForm = false;
 	let errorMessage = false;
+	let userMessage = false;
 
 	$: password = "";
     $: passwordConfirm = "";
@@ -35,6 +37,7 @@
 
 	const resetForm = ( ) => {
 		invalidForm = false;
+		userMessage = false;
 
 		resetUsernameValidation();
 		resetEmailValidation();
@@ -63,6 +66,81 @@
 				return false;
 		}
     }    
+
+	const postActiveForm = () => {
+		let form;
+		switch(activeForm) {
+			case AccountScreenEnum.loggingIn:
+				console.log(document.getElementById("log-in-form"))
+				form = new FormData(document.getElementById("log-in-form"));
+				form.append("form_type", "LOG_IN")
+				break;
+			case AccountScreenEnum.registering:
+				console.log(document.getElementById("sign-up-form"))
+				form = new FormData(document.getElementById("sign-up-form"));
+				form.append("form_type", "REGISTER")
+				break;
+			case AccountScreenEnum.validating:
+				console.log(document.getElementById("validate-form"))
+				form = new FormData(document.getElementById("validate-form"));
+				form.append("form_type", "VALIDATE")
+				break;
+			case AccountScreenEnum.resettingPassword:
+				console.log(document.getElementById("restore-password-form"))
+				form = new FormData(document.getElementById("restore-password-form"))
+				form.append("form_type", "RESET_PASSWORD")
+				break;
+			default:
+				console.log("Error sending form data");
+		}
+		console.log(Array.from(form))
+
+		prepareHTTPRequest( "POST", "catch_http_request.php", form );
+	} 
+
+	const prepareHTTPRequest = ( method, url, data ) => {
+		fetch( url, {
+			method: method,
+			body: data
+		} ).then( response => { 
+				return response.json()
+		}	).then( 
+			result => handleHTTPResponse(result)
+		).catch(err => {
+			console.log("Error Reading data " + err);
+		} );
+	}
+
+	const handleHTTPResponse = ( responseJSON ) => {
+		const responseObject = JSON.parse(responseJSON);
+		console.log(responseObject);
+		if ( responseObject["success"] ) {
+			handleFormSuccess( );
+		}
+		else {
+			errorMessage = responseObject["error-message"];
+			window.setTimeout(()=>{ errorMessage = false; }, 2000);
+		}
+	}
+
+	const handleFormSuccess = ( ) => {
+		switch(activeForm) {
+			case AccountScreenEnum.loggingIn:
+			case AccountScreenEnum.validating:
+				onUserLogin( );
+				break;
+			case AccountScreenEnum.registering:
+				userMessage = "Thanks for registering! You'll receive an activation email on your account soon.";
+				break;
+			case AccountScreenEnum.resettingPassword:
+				userMessage = "You've received an email with further instructions on restoring your account."
+				break;
+			default:
+				console.log("Error sending form data");
+		}
+
+		activeForm = false;
+	}
 
 	const onUsernameChange = ( ) => {
         userNameIsTooShort = document.getElementById("username-input").value.length < 3;
@@ -107,22 +185,22 @@
 	}
 
     const onPasswordConfirmChange = ( ) => {
-        passwordConfirm = document.getElementById("password-confirmation").value;
+        passwordConfirm = document.getElementById("password-confirmation-input").value;
     }
 	$: showConfirmPasswordWarning = !passwordsMatch
 	const resetConfirmPasswordValidation = ( ) => {
-		if ( document.getElementById("password-confirmation") != null ) {
-			document.getElementById("password-confirmation").value = "";
+		if ( document.getElementById("password-confirmation-input") != null ) {
+			document.getElementById("password-confirmation-input").value = "";
 		}
 		passwordConfirm = "";
 	}
 
 	const onSecretCodeChange = ( ) => {
-        codeIsDirty = document.getElementById("activation-code") !== null && document.getElementById("activation-code").value !== "";
+        codeIsDirty = document.getElementById("activation-code-input") !== null && document.getElementById("activation-code-input").value !== "";
     }
 	const resetSecretCodeValidation = ( ) => {
-		if ( document.getElementById("activation-code") !== null ) {
-			document.getElementById("activation-code").value = "";
+		if ( document.getElementById("activation-code-input") !== null ) {
+			document.getElementById("activation-code-input").value = "";
 		}
 		codeIsDirty = false;
 	}
@@ -151,6 +229,10 @@
 	}
 	.button-container {
 		margin-bottom: 5vh;
+	}
+	h3 {
+		margin: 0 auto;
+		max-width: 30vw;
 	}
 </style>
 
@@ -219,11 +301,13 @@
 			<FormWarning text={errorMessage}/>
 			<br/>
 		{/if}
+		{#if userMessage}
+			<h3>{userMessage}</h3>
+		{/if}
 		{#if activeForm !== false}
-			<Button elementId={"Sign_up_button"} action={() => {
+			<Button elementId={"Sign_up_button"} action={(e) => {
 				if ( checkIfFormIsValid() ) {
-					//postActiveForm( )
-					alert("form!");
+					postActiveForm( )
 				}
 				else {
 					invalidForm = true;

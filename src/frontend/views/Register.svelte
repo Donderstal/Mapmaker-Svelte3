@@ -26,7 +26,7 @@
         onChange={passwordValidator} showWarning={showPasswordWarning} warningText={"Your password must be at least 8 characters long."}
     />
     <InputDiv 
-        elementId={"password-confirmation"} placeholder={"Repeat your password."} type={"password"} labelText={"Repeat password:"} 
+        elementId={"password-confirmation-input"} placeholder={"Repeat your password."} type={"password"} labelText={"Repeat password:"} 
         onChange={passwordConfirmValidator} showWarning={showConfirmPasswordWarning} warningText={"The passwords you inputted do not match."}
     />
 </form>

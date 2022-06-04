@@ -52,12 +52,12 @@
         $DATABASE = GetDAAL( );
 
         if ( ReturnRowIfValueExists( 'users', 'username', $username ) != null ) {
-            echo json_encode('{"register-succes": false, "error-message": "This username is already taken."}', true);
+            echo json_encode('{"success": false, "error-message": "This username is already taken."}', true);
             return;
         }
 
         if ( ReturnRowIfValueExists( 'users', 'email', $email ) != null ) {
-            echo json_encode('{"register-succes": false, "error-message": "This email adress is already registered."}', true);
+            echo json_encode('{"success": false, "error-message": "This email adress is already registered."}', true);
             return;
         }
 
@@ -72,7 +72,7 @@
 
         SendMail( $username, $email, $validation_code, true );
 
-        echo json_encode('{"register-succes": true}', true);
+        echo json_encode('{"success": true}', true);
     }
 
     function LogInUser( $username, $password ) {
@@ -80,22 +80,21 @@
         $json_response;
 
         if( $USER_DATA == null ) {
-            echo json_encode('{"log-succes": false, "error-message": "This username does not exist. Please register first"}', true);
+            echo json_encode('{"success": false, "error-message": "This username does not exist. Please register first"}', true);
             return;
         }
 
         if (  $USER_DATA['validated'] == 0 ) {
-            echo json_encode('{"log-succes": false, "error-message": "Your account has not been validated"}', true);
+            echo json_encode('{"success": false, "error-message": "Your account has not been validated"}', true);
             return;
         }
         else if ( password_verify( $password, $USER_DATA['password'] ) ) {
             $_SESSION['username'] = $username;
-
-            echo json_encode('{"log-succes": true}', true);
+            echo json_encode('{"success": true}', true);
             return;
         } 
         else {
-            echo json_encode('{"log-succes": false, "error-message": "Password is not correct"}', true);
+            echo json_encode('{"success": false, "error-message": "Password is not correct"}', true);
             return;
         }
     }
@@ -106,22 +105,20 @@
         $USER_DATA = ReturnRowIfValueExists( 'users', 'username', $username );
 
         if ( $USER_DATA == null ) {
-            echo json_encode('{"validate-succes": false, "error-message": "This username is not recognised"}', true);
+            echo json_encode('{"success": false, "error-message": "This username is not recognised"}', true);
         } else if ( !password_verify( $password, $USER_DATA['password'] ) ) {
-            echo json_encode('{"validate-succes": false, "error-message": "This password does not match the one in the database"}', true);
+            echo json_encode('{"success": false, "error-message": "This password does not match the one in the database"}', true);
         } else if ( $USER_DATA["validation_code"] != $validation_code ) {
-            echo json_encode('{"validate-succes": false, "error-message": "This secret code is not correct. Are you sure it is the one we sent you?"}', true);
+            echo json_encode('{"success": false, "error-message": "This secret code is not correct. Are you sure it is the one we sent you?"}', true);
         } else {
             try {
                 $VALIDATE_USER_STMT = $DATABASE->prepare( "UPDATE users SET validated=?, validation_code=? WHERE username=?" );
                 $VALIDATE_USER_STMT->execute( [ 1, null, $username ] );
                 MakeUserDirectory( $username );
-                $_SESSION['username'] = $username;
+                LogInUser( $username, $password );
             } catch ( PDOException $e ) {
                 die( $e->getMessage( ) );
             }
-    
-            echo json_encode('{"validate-succes": true}', true);
         }
     }
 
@@ -131,8 +128,7 @@
         $USER_DATA = ReturnRowIfValueExists( 'users', 'username', $username );
 
         if ( $USER_DATA != null && $USER_DATA['email'] == $email ) {
-            echo json_encode('{"request-restore-succes": true}', true);
-
+            echo json_encode('{"success": true}', true);
             $validation_code = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 6)), 0, 6);
 
             try {
@@ -144,7 +140,7 @@
             }
             return;
         } else {
-            echo json_encode('{"request-restore-succes": false, "error-message": "This username is not paired with the email you inputted"}', true);
+            echo json_encode('{"success": false, "error-message": "This username is not paired with the email you inputted"}', true);
             return;
         } 
     }
@@ -159,19 +155,19 @@
                 $RESTORE_USER_ACCOUNT = $DATABASE->prepare( "UPDATE users SET password=?, validated=?, validation_code=? WHERE username=?" );
                 $RESTORE_USER_ACCOUNT->execute( [ password_hash( $new_password, PASSWORD_DEFAULT ), 1, null, $username ] );
                 $_SESSION['username'] = $username;
-                echo json_encode('{"restore-password-succes": true}', true);
+                echo json_encode('{"success": true}', true);
             } catch ( PDOException $e ) {
                 die( $e->getMessage( ) );
             }
             return;
         } else {
-            echo json_encode('{"restore-password-succes": false, "error-message": "The username you inputted is not paired with your secret code"}', true);
+            echo json_encode('{"success": false, "error-message": "The username you inputted is not paired with your secret code"}', true);
             return;
         } 
     }
 
     function LogOutUser( ) {
         session_destroy( );
-        echo json_encode('{"log-succes": true}', true);
+        echo json_encode('{"success": true}', true);
     }
 ?>
