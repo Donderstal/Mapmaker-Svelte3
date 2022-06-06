@@ -51,7 +51,7 @@
         $map_files = scandir( $_SERVER['DOCUMENT_ROOT'].$maps_path );
 
         $Return_Arr = array( 
-            "get-user-maps-success" => "Tmapsmapsmaps", 
+            "success" => "Tmapsmapsmaps", 
             "error-message" => "error burh..."
         );
 

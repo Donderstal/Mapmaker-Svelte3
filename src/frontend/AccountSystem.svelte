@@ -71,22 +71,18 @@
 		let form;
 		switch(activeForm) {
 			case AccountScreenEnum.loggingIn:
-				console.log(document.getElementById("log-in-form"))
 				form = new FormData(document.getElementById("log-in-form"));
 				form.append("form_type", "LOG_IN")
 				break;
 			case AccountScreenEnum.registering:
-				console.log(document.getElementById("sign-up-form"))
 				form = new FormData(document.getElementById("sign-up-form"));
 				form.append("form_type", "REGISTER")
 				break;
 			case AccountScreenEnum.validating:
-				console.log(document.getElementById("validate-form"))
 				form = new FormData(document.getElementById("validate-form"));
 				form.append("form_type", "VALIDATE")
 				break;
 			case AccountScreenEnum.resettingPassword:
-				console.log(document.getElementById("restore-password-form"))
 				form = new FormData(document.getElementById("restore-password-form"))
 				form.append("form_type", "RESET_PASSWORD")
 				break;
@@ -102,11 +98,12 @@
 		fetch( url, {
 			method: method,
 			body: data
-		} ).then( response => { 
-				return response.json()
-		}	).then( 
+		}).then( response => { 
+			return response.json()
+		}).then( 
 			result => handleHTTPResponse(result)
 		).catch(err => {
+			console.trace( );
 			console.log("Error Reading data " + err);
 		} );
 	}

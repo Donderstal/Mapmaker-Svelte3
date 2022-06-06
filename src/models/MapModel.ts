@@ -1,4 +1,5 @@
 ﻿import type { CharacterModel } from "./CharacterModel";
+import type { DoorModel } from "./DoorModel";
 import type { MapObjectModel } from "./MapObjectModel";
 import type { RoadModel } from "./RoadModel";
 import type { SpawnPointModel } from "./SpawnPointModel";
@@ -21,4 +22,5 @@ export type MapModel = {
 
     spawnPoints: SpawnPointModel[];
     roads: RoadModel[];
+    doors: DoorModel[];
 }

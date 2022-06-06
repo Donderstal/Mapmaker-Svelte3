@@ -6,7 +6,7 @@ export type RoadModel = {
     alignment: RoadAlignmentEnum;
     hasStart: boolean;
 
-    primarColumn: number;
+    primaryColumn: number;
     secondaryColumn: number;
     primaryRow: number;
     secondaryRow: number;
