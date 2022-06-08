@@ -1,6 +1,11 @@
+import { TilesheetTypeEnum } from "../enumerables/TilesheetTypeEnum";
+
 export const sheets = {
     "Interior_Yum_Mart_Tiles" : {
-        "src": "Interior_Yum_Mart_Tiles.png",    
+        "src": "Interior_Yum_Mart_Tiles.png",  
+        "name": "Yum interior old",
+        "key": "Interior_Yum_Mart_Tiles",
+        "category": TilesheetTypeEnum.obsolete,
         "uniqueTiles": 79,
         "blocked": [
             2, 3, 6, 7, 13, 14, 15, 17, 18, 19, 21, 22, 
@@ -13,11 +18,17 @@ export const sheets = {
     },
     "Yum_Mart": {
         "src": "Yum_mart.png",
-        "uniqueTiles": 40
+        "uniqueTiles": 40,
+        "name": "Yum interior new",
+        "key": "Yum_Mart",
+        "category": TilesheetTypeEnum.indoors
     },
     "downtown_2": {
         "src": "City5_Tiles.png",
         "uniqueTiles": 608,
+        "name": "Downtown (clean)",
+        "key": "downtown_2",
+        "category": TilesheetTypeEnum.outdoors,
         "blocked": [
             0,
             1,
@@ -592,7 +603,10 @@ export const sheets = {
     },
     "starting_neighbourhood_clean": {
         "src": "Starting_neighbourhood_2.png",
+        "name": "Leonard Heights (clean)",
+        "key": "starting_neighbourhood_clean",
         "uniqueTiles": 1300,
+        "category": TilesheetTypeEnum.outdoors,
         "blocked": [
             0,
             1,
@@ -1576,28 +1590,40 @@ export const sheets = {
             1165
         ]
     },
-    "battle_downtown" : {
+    "battle_downtown": {
+        "name": "Battle",
+        "key": "battle_downtown",
         "src": "battle_tiles.png",
+        "category": TilesheetTypeEnum.obsolete,
         "uniqueTiles": 150,
         "blocked": [ ]
     },
-    "Generic_Room_AX" : {
+    "Generic_Room_AX": {
+        "name": "Indoor set A",
+        "key": "Generic_Room_AX",
         "src": "Generic_Room_AX_Tile_Sheet.png",
         "uniqueTiles": 48,
+        "category": TilesheetTypeEnum.indoors,
         "blocked": [
             0, 1, 2, 3, 11, 16, 17, 18, 19, 24, 27
         ]
     },
-    "Generic_Room_BX" : {
+    "Generic_Room_BX": {
+        "name": "Indoor set B",
+        "key": "Generic_Room_BX",
         "src": "Generic_Room_BX.png",
         "uniqueTiles": 48,
+        "category": TilesheetTypeEnum.indoors,
         "blocked": [
             0, 1, 2, 3, 10, 11, 16, 17, 18, 19, 24, 25, 32, 33
         ]
     },
-    "Generic_Room_DX" : {
+    "Generic_Room_DX": {
+        "name": "Indoor set D",
+        "key": "Generic_Room_DX",
         "src": "Generic_Room_DX.png",
         "uniqueTiles": 48,
+        "category": TilesheetTypeEnum.indoors,
         "blocked": [
             0, 1, 2, 3, 10, 11, 16, 17, 18, 19, 24, 25, 32, 33
         ]

@@ -5,7 +5,7 @@
 	import NewMap from "./views/NewMap.svelte";
 	import LoadMap from "./views/LoadMap.svelte";
 
-	let activeForm = false;;
+	let activeForm = false;
 
 	const resetForm = ( ) => {
 		activeForm = false;
@@ -15,6 +15,20 @@
 		resetForm( );
 		activeForm = formType;
 	} 
+
+	const getFormOptions = ( ) => {
+		switch( activeForm ) {
+			case MainMenuEnum.createMap :
+				break;
+			case MainMenuEnum.loadMap :
+				break;
+			case MainMenuEnum.neighbourhoodOverview :
+				break;
+			default:
+				alert('error processing form! Please reload the page')
+				break;
+		}
+	}
 </script>
 <style>
 	.container {
@@ -66,6 +80,11 @@
 			<LoadMap/>
 		{:else if activeForm == MainMenuEnum.neighbourhoodOverview }
 			<SelectOverview/>
+		{/if}
+		{#if activeForm !== false}
+			<Button elementId={"Lets_go_button"} action={() => {
+				getFormOptions( );
+			}} buttonText={"Let's go!"}/>
 		{/if}
 	</div>
 </div>

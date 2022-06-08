@@ -302,7 +302,7 @@
 			<h3>{userMessage}</h3>
 		{/if}
 		{#if activeForm !== false}
-			<Button elementId={"Sign_up_button"} action={(e) => {
+			<Button elementId={"Lets_go_button"} action={(e) => {
 				if ( checkIfFormIsValid() ) {
 					postActiveForm( )
 				}
@@ -310,7 +310,7 @@
 					invalidForm = true;
 					window.setTimeout(()=>{ invalidForm = false; }, 2000)
 				}
-			}} buttonText={"Sign up"}/>
+			}} buttonText={"Let's go!"}/>
 		{/if}
 	</div>
 </div>

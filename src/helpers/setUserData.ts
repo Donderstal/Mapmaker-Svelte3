@@ -9,6 +9,7 @@ import type { MapObjectModel } from '../models/MapObjectModel';
 import type { DoorModel } from '../models/DoorModel';
 
 import { RoadAlignmentEnum } from '../enumerables/RoadAlignmentEnum';
+import { sheets } from '../resources/tilesheetResources';
 
 export const setUserData = ( characters, objects, maps, neighbourhoods ) => {
     const availableMaps = Object.keys( maps ).map( ( mapKey ) => {
@@ -18,6 +19,7 @@ export const setUserData = ( characters, objects, maps, neighbourhoods ) => {
         name: "test",
         characterPngs: characters,
         assetPngs: objects,
+        tilesets: sheets,
 
         maps: availableMaps,
         neighbourhoods: Object.keys( neighbourhoods ).map( ( neighbourhoodKey ) => {

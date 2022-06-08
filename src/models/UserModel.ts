@@ -6,6 +6,7 @@ export type UserModel = {
 
     characterPngs: string[],
     assetPngs: string[],
+    tilesets: object,
 
     maps: MapModel[],
     neighbourhoods: NeighbourhoodModel[],

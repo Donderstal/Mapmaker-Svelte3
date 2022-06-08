@@ -1,3 +1,12 @@
+<script>
+	import { user } from '../../stores.ts'
+</script>
+
 <div>
-	<h2>Select neighbourhood</h2>
+	<label for="neighbourhoodselect">Choose neighbourhood for overview:</label>
+	<select id="neighbourhoodselect">
+		{#each $user.neighbourhoods as neighbourhood}
+			<option>{neighbourhood.name}</option>
+		{/each}	
+	</select>
 </div>
