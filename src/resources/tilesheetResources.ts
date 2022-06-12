@@ -1,4 +1,5 @@
 import { TilesheetTypeEnum } from "../enumerables/TilesheetTypeEnum";
+import type { TilesheetModel } from "../models/TilesheetModel";
 
 export const sheets = {
     "Interior_Yum_Mart_Tiles" : {
@@ -1628,4 +1629,19 @@ export const sheets = {
             0, 1, 2, 3, 10, 11, 16, 17, 18, 19, 24, 25, 32, 33
         ]
     }
+}
+
+export const getTileSheetModels = () => {
+    return Object.values( sheets ).map( ( e ) => {
+        let model: TilesheetModel = {
+            name: e["name"],
+            key: e["key"],
+            src: e["src"],
+            uniqueTiles: e["uniqueTiles"],
+            category: e["category"],
+            blocked: e["blocked"] !== undefined ? e["blocked"] : []
+        }
+
+        return model;
+    } )
 }

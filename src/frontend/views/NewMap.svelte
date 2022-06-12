@@ -2,10 +2,9 @@
     import InputDiv from "../partials/InputDiv.svelte";
     import { user } from '../../stores.ts'
     import { TilesheetTypeEnum } from "../../enumerables/TilesheetTypeEnum";
-
-    const outdoorSheets = Object.values($user.tilesets).filter((e)=>{return e.category === TilesheetTypeEnum.outdoors});
-    const indoorSheets = Object.values($user.tilesets).filter((e)=>{return e.category === TilesheetTypeEnum.indoors});
-    const obsoleteSheets  = Object.values($user.tilesets).filter((e)=>{return e.category === TilesheetTypeEnum.obsolete});
+    const outdoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.outdoors});
+    const indoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.indoors});
+    const obsoleteSheets  = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.obsolete});
 </script>
 <div>
 	<InputDiv
@@ -24,17 +23,17 @@
 	<select id="tilesheet-select">
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
-                <option value="{outdoorSheet.key}">{outdoorSheet.name}</option>
+                <option value="{outdoorSheet.dataObject.key}">{outdoorSheet.dataObject.name}</option>
             {/each}
         </optgroup>
         <optgroup label="Indoor sheets">
             {#each indoorSheets as indoorSheet}
-                <option value="{indoorSheet.key}">{indoorSheet.name}</option>
+                <option value="{indoorSheet.dataObject.key}">{indoorSheet.dataObject.name}</option>
             {/each}
         </optgroup>
         <optgroup label="Obsolete sheets">
             {#each obsoleteSheets as obsoleteSheet}
-                <option value="{obsoleteSheet.key}">{obsoleteSheet.name}</option>
+                <option value="{obsoleteSheet.dataObject.key}">{obsoleteSheet.dataObject.name}</option>
             {/each}
         </optgroup>
 	</select>

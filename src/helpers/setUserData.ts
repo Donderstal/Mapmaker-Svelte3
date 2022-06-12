@@ -7,9 +7,12 @@ import type { SpawnPointModel } from '../models/SpawnPointModel';
 import type { CharacterModel } from '../models/CharacterModel';
 import type { MapObjectModel } from '../models/MapObjectModel';
 import type { DoorModel } from '../models/DoorModel';
+import type { ImageModel } from '../models/ImageModel';
 
 import { RoadAlignmentEnum } from '../enumerables/RoadAlignmentEnum';
-import { sheets } from '../resources/tilesheetResources';
+import { getTileSheetModels, sheets } from '../resources/tilesheetResources';
+import { getClassProfiles } from '../resources/classProfileResources';
+import { getMapObjectSpriteModels } from '../resources/mapObjectResources';
 
 export const setUserData = ( characters, objects, maps, neighbourhoods ) => {
     const availableMaps = Object.keys( maps ).map( ( mapKey ) => {
@@ -17,17 +20,52 @@ export const setUserData = ( characters, objects, maps, neighbourhoods ) => {
     } )
     const returner: UserModel = {
         name: "test",
-        characterPngs: characters,
-        assetPngs: objects,
-        tilesets: sheets,
+        characterPngs: initCharacterSprites(  ),
+        assetPngs: initMapObjectSprites( ),
+        tilesets: initTilesheets( ),
 
         maps: availableMaps,
         neighbourhoods: Object.keys( neighbourhoods ).map( ( neighbourhoodKey ) => {
             return initNeighbourhoodModel( neighbourhoods[neighbourhoodKey], availableMaps )
         } )
     };
-    console.log( returner )
     return returner;
+}
+
+const initCharacterSprites = ( ) => {
+    const characters = getClassProfiles();
+    return characters.map( ( character ) => {
+        const image: ImageModel = {
+            image: new Image( ),
+            dataObject: character
+        }
+        image.image.src = character.src;
+        return image;
+    } )
+}
+
+const initMapObjectSprites = ( ) => {
+    const mapObjectSprites = getMapObjectSpriteModels();
+    return mapObjectSprites.map( ( spriteModel ) => {
+        const image: ImageModel = {
+            image: new Image( ),
+            dataObject: spriteModel
+        }
+        image.image.src = spriteModel.src;
+        return image;
+    } )
+}
+
+const initTilesheets = () => {
+    const tilesheetModels = getTileSheetModels();
+    return tilesheetModels.map( ( sheetModel ) => {
+        const image: ImageModel = {
+            image: new Image(),
+            dataObject: sheetModel
+        }
+        image.image.src = sheetModel.src;
+        return image;
+    } );
 }
 
 export const initMapModel = ( mapData ) => {

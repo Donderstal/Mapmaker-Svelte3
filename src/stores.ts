@@ -14,11 +14,8 @@ export const onUserLogin = ( ) => {
 	} ).then( response => {
 		return response.json();
 	} ).then( returner => {
-		console.log( returner )
 		const userData = setUserData( returner["characters"], returner["objects"], returner["maps"], returner["neighbourhoods"] );
-		console.log( userData );
 		user.set( userData );
-		console.log( get( user ) )
 	} );
 	loggedIn.set( true );
 }

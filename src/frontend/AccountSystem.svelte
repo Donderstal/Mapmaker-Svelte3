@@ -87,9 +87,8 @@
 				form.append("form_type", "RESET_PASSWORD")
 				break;
 			default:
-				console.log("Error sending form data");
+				console.log("Error sending form data. Activeform: " + activeForm);
 		}
-		console.log(Array.from(form))
 
 		prepareHTTPRequest( "POST", "catch_http_request.php", form );
 	} 
@@ -110,7 +109,6 @@
 
 	const handleHTTPResponse = ( responseJSON ) => {
 		const responseObject = JSON.parse(responseJSON);
-		console.log(responseObject);
 		if ( responseObject["success"] ) {
 			handleFormSuccess( );
 		}
@@ -133,7 +131,7 @@
 				userMessage = "You've received an email with further instructions on restoring your account."
 				break;
 			default:
-				console.log("Error sending form data");
+				console.log("Error sending form data. Activeform: " + activeForm);
 		}
 
 		activeForm = false;

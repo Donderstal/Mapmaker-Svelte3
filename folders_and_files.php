@@ -51,8 +51,7 @@
         $map_files = scandir( $_SERVER['DOCUMENT_ROOT'].$maps_path );
 
         $Return_Arr = array( 
-            "success" => "Tmapsmapsmaps", 
-            "error-message" => "error burh..."
+            "success" => true
         );
 
         $neighbourhoods = array( );

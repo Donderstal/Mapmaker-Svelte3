@@ -1,5 +1,7 @@
 import { FACING_RIGHT, FACING_LEFT, FACING_UP, FACING_DOWN } from "./constants";
 import { COLLECTABLE_COIN, COLLECTABLE_JUICE_CAN } from "./interactionGlobals";
+import type { MapObjectSpriteModel } from "../models/MapObjectSpriteModel";
+import { SpriteSheetAlignmentEnum } from "../enumerables/SpriteSheetAlignmentEnum";
 
 const ONE_BLOCK_SPRITE = {
     "dimensional_alignment": "STANDARD",
@@ -1090,4 +1092,47 @@ export const spriteData = {
     "door_interior_south_light" : {
         ...getStandardDoorSouth("Door_interior_south_light.png")
     }
+}
+
+export const getMapObjectSpriteModels = (  ) => {
+    return Object.entries( spriteData ).map( ( e ) => {
+        const key = e[0];
+        const value = e[1];
+
+        let model: MapObjectSpriteModel = {
+            key: key,
+            src: value["src"],
+            dimensionalAlignment: value["dimensional_alignment"],
+
+            isCar: value["isCar"] !== undefined ? value["isCar"] : false,
+            idleAnimation: value["idle_animation"] !== undefined ? value["idle_animation"] : false,
+            onBackground: value["on_background"] !== undefined ? value["on_background"] : false,
+            notGrounded: value["not_grounded"] !== undefined ? value["not_grounded"] : false,
+            groundedAtBottom: value["grounded_at_bottom"] !== undefined ? value["grounded_at_bottom"] : false,
+        };
+
+        if ( value["dimensional_alignment"] == SpriteSheetAlignmentEnum.standard ) {
+            model.widthBlocks = value["width_blocks"];
+            model.heightBlocks = value["height_blocks"];
+        }
+        else if ( value["dimensional_alignment"] == SpriteSheetAlignmentEnum.horiVert ) {
+            model.horiWidthBlocks = value["hori_width_blocks"];
+            model.horiHeightBlocks = value["hori_height_blocks"];
+            model.vertWidthBlocks = value["vert_width_blocks"];
+            model.vertHeightBlocks = value["vert_height_blocks"];
+            model.movementFrames = value["movement_frames"];
+        }
+
+        if ( value["idle_animation_frames"] !== undefined )
+            model.idleAnimationFrames = value["idle_animation_frames"]; 
+        if ( value["collectable_type"] !== undefined ) {
+            model.collectableType = value["collectable_type"]; 
+        }
+        if ( value["tile_alignment"] !== undefined )
+            model.tileAlignment = value["tile_alignment"];
+        if ( value["blocked_area"] !== undefined ) {
+            model.blockedArea = value["blocked_area"];
+        }
+        return model;
+    } )
 }
