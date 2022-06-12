@@ -81,8 +81,6 @@
 
         $Return_Arr["neighbourhoods"] = $neighbourhoods;
         $Return_Arr["maps"] = $maps;
-        $Return_Arr["characters"] = getCharacterSprites( );
-        $Return_Arr["objects"] = getMapObjects( );
         echo json_encode($Return_Arr);
     }
 ?>
