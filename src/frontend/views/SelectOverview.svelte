@@ -1,10 +1,11 @@
 <script>
-	import { user } from '../../stores.ts'
+	import { user } from '../../stores.ts';
+	export let optionListener;
 </script>
 
 <div>
 	<label for="neighbourhoodselect">Choose neighbourhood for overview:</label>
-	<select id="neighbourhoodselect">
+	<select id="neighbourhoodselect" on:change={optionListener}>
 		{#each $user.neighbourhoods as neighbourhood}
 			<option>{neighbourhood.name}</option>
 		{/each}	

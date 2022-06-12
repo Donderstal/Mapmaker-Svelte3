@@ -10,11 +10,11 @@ import type { DoorModel } from '../models/DoorModel';
 import type { ImageModel } from '../models/ImageModel';
 
 import { RoadAlignmentEnum } from '../enumerables/RoadAlignmentEnum';
-import { getTileSheetModels, sheets } from '../resources/tilesheetResources';
+import { getTileSheetModels } from '../resources/tilesheetResources';
 import { getClassProfiles } from '../resources/classProfileResources';
 import { getMapObjectSpriteModels } from '../resources/mapObjectResources';
 
-export const setUserData = ( characters, objects, maps, neighbourhoods ) => {
+export const setUserData = ( maps: object[], neighbourhoods: object[] ) => {
     const availableMaps = Object.keys( maps ).map( ( mapKey ) => {
         return initMapModel( maps[mapKey] );
     } )
@@ -32,43 +32,43 @@ export const setUserData = ( characters, objects, maps, neighbourhoods ) => {
     return returner;
 }
 
-const initCharacterSprites = ( ) => {
+const initCharacterSprites = ( ): ImageModel[] => {
     const characters = getClassProfiles();
     return characters.map( ( character ) => {
         const image: ImageModel = {
             image: new Image( ),
             dataObject: character
         }
-        image.image.src = character.src;
+        image.image.src = "/png-files/sprites/" + character.src;
         return image;
     } )
 }
 
-const initMapObjectSprites = ( ) => {
+const initMapObjectSprites = ( ): ImageModel[] => {
     const mapObjectSprites = getMapObjectSpriteModels();
     return mapObjectSprites.map( ( spriteModel ) => {
         const image: ImageModel = {
             image: new Image( ),
             dataObject: spriteModel
         }
-        image.image.src = spriteModel.src;
+        image.image.src = "/png-files/sprite-assets/" + spriteModel.src;
         return image;
     } )
 }
 
-const initTilesheets = () => {
+const initTilesheets = ( ): ImageModel[] => {
     const tilesheetModels = getTileSheetModels();
     return tilesheetModels.map( ( sheetModel ) => {
         const image: ImageModel = {
             image: new Image(),
             dataObject: sheetModel
         }
-        image.image.src = sheetModel.src;
+        image.image.src = "/png-files/tilesheets/" + sheetModel.src;
         return image;
     } );
 }
 
-export const initMapModel = ( mapData ) => {
+export const initMapModel = ( mapData ): MapModel => {
     const mapModel: MapModel = {
         name: mapData.name == undefined ? mapData.mapName : mapData.name,
         columns: mapData.columns == undefined ? mapData.cols : mapData.columns,
@@ -103,7 +103,7 @@ export const initMapModel = ( mapData ) => {
     return mapModel;
 }
 
-export const initNeighbourhoodModel = ( neighbourhoodData, availableMaps ) => {
+export const initNeighbourhoodModel = ( neighbourhoodData, availableMaps ): NeighbourhoodModel => {
     const mapKeys = Object.keys( neighbourhoodData.mapDictionary ) 
     const mapDictionary = {}
 
@@ -124,7 +124,7 @@ export const initNeighbourhoodModel = ( neighbourhoodData, availableMaps ) => {
     return neighbourhoodModel;
 }
 
-export const initTileModel = ( tileData ) => {
+export const initTileModel = ( tileData ): TileModel => {
     const isDataObject = typeof tileData !== "string" && typeof tileData !== "number"
     const tileModel: TileModel = {
         id: isDataObject ? tileData.id : tileData,
@@ -135,7 +135,7 @@ export const initTileModel = ( tileData ) => {
     return tileModel;
 }
 
-export const initRoadModel = ( roadData ) => {
+export const initRoadModel = ( roadData ): RoadModel => {
     const roadModel: RoadModel = {
         direction: roadData.direction,
         alignment: roadData.alignment,
@@ -166,7 +166,7 @@ export const initRoadModel = ( roadData ) => {
     return roadModel;
 }
 
-export const initSpawnPointModel = ( spawnPointData ) => {
+export const initSpawnPointModel = ( spawnPointData ): SpawnPointModel => {
     const spawnPointModel: SpawnPointModel = {
         row: spawnPointData.row,
         column: spawnPointData.column == undefined ? spawnPointData.col : spawnPointData.column,
@@ -175,7 +175,7 @@ export const initSpawnPointModel = ( spawnPointData ) => {
     return spawnPointModel;
 }
 
-export const initCharacterModel = ( characterData ) => {
+export const initCharacterModel = ( characterData ): CharacterModel => {
     const characterModel: CharacterModel = {
         animation_type: characterData.anim_type,
         sprite: characterData.sprite,
@@ -186,7 +186,7 @@ export const initCharacterModel = ( characterData ) => {
     return characterModel;
 }
 
-export const initMapObjectModel = ( mapObjectData ) => {
+export const initMapObjectModel = ( mapObjectData ): MapObjectModel => {
     const mapObjectModel: MapObjectModel = {
         type: mapObjectData.type,
         row: mapObjectData.row,
@@ -196,7 +196,7 @@ export const initMapObjectModel = ( mapObjectData ) => {
     return mapObjectModel;
 }
 
-export const initDoorModel = ( doorData ) => {
+export const initDoorModel = ( doorData ): DoorModel => {
     const doorModel: DoorModel = {
         row: doorData.row,
         column: doorData.column == undefined ? doorData.col : doorData.column,

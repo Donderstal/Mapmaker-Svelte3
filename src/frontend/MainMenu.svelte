@@ -1,11 +1,16 @@
 <script>
 	import { MainMenuEnum } from "../enumerables/MainMenuEnum";
+	import { user } from '../stores.ts'
+
 	import Button from "./partials/Button.svelte";
 	import SelectOverview from "./views/SelectOverview.svelte";
 	import NewMap from "./views/NewMap.svelte";
 	import LoadMap from "./views/LoadMap.svelte";
+	import { CanvasTypEnum } from "../enumerables/CanvasTypeEnum";
+	import Canvas from "./partials/Canvas.svelte";
 
 	let activeForm = false;
+	let previewCanvas = false;
 
 	const resetForm = ( ) => {
 		activeForm = false;
@@ -28,6 +33,14 @@
 				alert('error processing form! Please reload the page')
 				break;
 		}
+	}
+
+	const getSelectedOption = ( event ) => {
+		let map = $user.maps.filter((e)=>{return e.name === event.target.value})[0];
+		let sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
+		previewCanvas.setMapModel( map, sheet );
+		previewCanvas.drawTileBordersToCanvas( );
+		previewCanvas.drawGridToCanvas( );
 	}
 </script>
 <style>
@@ -72,14 +85,15 @@
 		<div class="button-container">
 			<Button action={()=>activateForm(MainMenuEnum.neighbourhoodOverview)} buttonText={"Map overview"}/>
 		</div>
+		<Canvas bind:this={previewCanvas} canvastype={CanvasTypEnum.background}/>
 	</div>
 	<div class="right-item">
 		{#if activeForm == MainMenuEnum.createMap }
-			<NewMap/>
+			<NewMap optionListener={getSelectedOption}/>
 		{:else if activeForm == MainMenuEnum.loadMap }
-			<LoadMap/>
+			<LoadMap optionListener={getSelectedOption}/>
 		{:else if activeForm == MainMenuEnum.neighbourhoodOverview }
-			<SelectOverview/>
+			<SelectOverview optionListener={getSelectedOption}/>
 		{/if}
 		{#if activeForm !== false}
 			<Button elementId={"Lets_go_button"} action={() => {

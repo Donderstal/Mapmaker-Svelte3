@@ -2,6 +2,9 @@
     import InputDiv from "../partials/InputDiv.svelte";
     import { user } from '../../stores.ts'
     import { TilesheetTypeEnum } from "../../enumerables/TilesheetTypeEnum";
+
+    export let optionListener;
+
     const outdoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.outdoors});
     const indoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.indoors});
     const obsoleteSheets  = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.obsolete});
@@ -20,7 +23,7 @@
         onChange={false} showWarning={false} warningText={""}
     />
     <label for="tilesheet-select">Choose a tilesheet:</label>
-	<select id="tilesheet-select">
+	<select id="tilesheet-select" on:change={optionListener}>
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
                 <option value="{outdoorSheet.dataObject.key}">{outdoorSheet.dataObject.name}</option>
