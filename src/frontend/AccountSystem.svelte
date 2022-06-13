@@ -2,12 +2,7 @@
 	//partials
 	import Button from "./partials/Button.svelte";
 	import FormWarning from "./partials/FormWarning.svelte";
-
-	//views
-	import Register from "./views/Register.svelte";
-	import LogIn from "./views/LogIn.svelte";
-	import Validate from "./views/Validate.svelte";
-	import ResetPassword from './views/ResetPassword.svelte';
+	import Form from "./views/Form.svelte";
 
 	//enumerables
 	import { AccountScreenEnum } from "../enumerables/AccountScreenEnum";
@@ -15,83 +10,54 @@
 	
 	//login system navigation
 	let activeForm = false;
+	let activeFormType = false;
+
+	let logInForm;
+	$: showLogIn = activeFormType === AccountScreenEnum.loggingIn;
+	let validateForm;
+	$: showValidate = activeFormType === AccountScreenEnum.validating
+	let registerForm;
+	$: showRegister = activeFormType === AccountScreenEnum.registering;
+	let resetPasswordForm;
+	$: showResetPassword = activeFormType === AccountScreenEnum.resettingPassword;
 
 	//form validation
 	let invalidForm = false;
 	let errorMessage = false;
 	let userMessage = false;
 
-	$: password = "";
-    $: passwordConfirm = "";
-    $: passwordsMatch = password == passwordConfirm;
-    let passwordIsDirty = false;
-    let passwordIsTooShort = false;
-
-    let emailIsValid = false;
-    let emailIsDirty = false;
-
-    let userNameIsDirty = false;
-    let userNameIsTooShort = false;
-
-	let codeIsDirty = true;
-
 	const resetForm = ( ) => {
 		invalidForm = false;
 		userMessage = false;
-
-		resetUsernameValidation();
-		resetEmailValidation();
-		resetPasswordValidation();
-		resetConfirmPasswordValidation();
-		resetSecretCodeValidation();
+		if( activeForm !== false ) {
+			activeForm.resetFormData( );
+		}
 	}
 
 	const activateForm = ( form ) => {
 		resetForm();
-		activeForm = form;
-	}
+		activeFormType = form;
+		activeForm = getFormByActiveType( );
+;	}
 
-    const checkIfFormIsValid = ( ) => {
-		switch(activeForm) {
+	const getFormByActiveType = ( ) => {
+		switch( activeFormType ) {
 			case AccountScreenEnum.loggingIn:
-				return passwordIsDirty && userNameIsDirty;
+				return logInForm;
 			case AccountScreenEnum.registering:
-				return passwordIsDirty && !passwordIsTooShort && passwordsMatch 
-				&& emailIsValid && emailIsDirty && userNameIsDirty && !userNameIsTooShort;
+				return registerForm; 
 			case AccountScreenEnum.validating:
-				return passwordIsDirty && userNameIsDirty && codeIsDirty;
+				return validateForm;
 			case AccountScreenEnum.resettingPassword:
-				return emailIsValid && emailIsDirty && userNameIsDirty;
+				return resetPasswordForm;
 			default:
 				return false;
 		}
+	}
+
+    const checkIfFormIsValid = ( ) => {
+		return activeForm.checkIfFormIsValid( );
     }    
-
-	const postActiveForm = () => {
-		let form;
-		switch(activeForm) {
-			case AccountScreenEnum.loggingIn:
-				form = new FormData(document.getElementById("log-in-form"));
-				form.append("form_type", "LOG_IN")
-				break;
-			case AccountScreenEnum.registering:
-				form = new FormData(document.getElementById("sign-up-form"));
-				form.append("form_type", "REGISTER")
-				break;
-			case AccountScreenEnum.validating:
-				form = new FormData(document.getElementById("validate-form"));
-				form.append("form_type", "VALIDATE")
-				break;
-			case AccountScreenEnum.resettingPassword:
-				form = new FormData(document.getElementById("restore-password-form"))
-				form.append("form_type", "RESET_PASSWORD")
-				break;
-			default:
-				console.log("Error sending form data. Activeform: " + activeForm);
-		}
-
-		prepareHTTPRequest( "POST", "catch_http_request.php", form );
-	} 
 
 	const prepareHTTPRequest = ( method, url, data ) => {
 		fetch( url, {
@@ -119,7 +85,7 @@
 	}
 
 	const handleFormSuccess = ( ) => {
-		switch(activeForm) {
+		switch(activeFormType) {
 			case AccountScreenEnum.loggingIn:
 			case AccountScreenEnum.validating:
 				onUserLogin( );
@@ -137,67 +103,14 @@
 		activeForm = false;
 	}
 
-	const onUsernameChange = ( ) => {
-        userNameIsTooShort = document.getElementById("username-input").value.length < 3;
-        userNameIsDirty = document.getElementById("username-input") !== null && document.getElementById("username-input").value !== "";
-    }
-	$: showUsernameWarning = userNameIsTooShort && userNameIsDirty;
-	const resetUsernameValidation = ( ) => {
-		if ( document.getElementById("username-input") !== null ) {
-			document.getElementById("username-input").value = "";
+	const handleButtonClick = ( ) => {
+		if ( checkIfFormIsValid() ) {
+			prepareHTTPRequest( "POST", "catch_http_request.php", activeForm.getFormData( ) )
 		}
-		userNameIsTooShort = false;
-		userNameIsDirty = false;
-	}
-
-	const onEmailAddressChange = ( ) => {
-        const emailRegex = /\S+@\S+\.\S+/;
-        emailIsValid = emailRegex.test(document.getElementById("email-input").value);
-        emailIsDirty = document.getElementById("email-input") !== null && document.getElementById("email-input").value !== "";
-    }
-	$: showEmailWarning = !emailIsValid && emailIsDirty;
-	const resetEmailValidation = ( ) => {
-		if ( document.getElementById("email-input") !== null ) {
-			document.getElementById("email-input").value = "";
+		else {
+			invalidForm = true;
+			window.setTimeout(()=>{ invalidForm = false; }, 2000)
 		}
-		emailIsValid = false;
-        emailIsDirty = false;
-	}
-
-    const onPasswordChange = ( ) => {
-		password = document.getElementById("password-input").value;
-        passwordIsTooShort = document.getElementById("password-input").value.length < 8;
-        passwordIsDirty = document.getElementById("password-input") !== null && document.getElementById("password-input").value !== "";
-    }
-	$: showPasswordWarning = passwordIsTooShort;
-	const resetPasswordValidation = ( ) => {
-		if ( document.getElementById("password-input") !== null ) {
-			document.getElementById("password-input").value = "";
-		}
-		password = "";
-		passwordIsTooShort = false;
-		passwordIsDirty = false
-	}
-
-    const onPasswordConfirmChange = ( ) => {
-        passwordConfirm = document.getElementById("password-confirmation-input").value;
-    }
-	$: showConfirmPasswordWarning = !passwordsMatch
-	const resetConfirmPasswordValidation = ( ) => {
-		if ( document.getElementById("password-confirmation-input") != null ) {
-			document.getElementById("password-confirmation-input").value = "";
-		}
-		passwordConfirm = "";
-	}
-
-	const onSecretCodeChange = ( ) => {
-        codeIsDirty = document.getElementById("activation-code-input") !== null && document.getElementById("activation-code-input").value !== "";
-    }
-	const resetSecretCodeValidation = ( ) => {
-		if ( document.getElementById("activation-code-input") !== null ) {
-			document.getElementById("activation-code-input").value = "";
-		}
-		codeIsDirty = false;
 	}
 </script>
 <style>
@@ -252,42 +165,26 @@
 		</div>
 	</div>
 	<div class="right-item">
-		{#if activeForm === AccountScreenEnum.loggingIn}	
-			<LogIn 
-				userNameValidator={onUsernameChange}
-				passwordValidator={onPasswordChange}
-
-				showUsernameWarning={showUsernameWarning}
-			/>
-		{:else if activeForm === AccountScreenEnum.registering}
-			<Register
-				userNameValidator={onUsernameChange}
-				emailAddressValidator={onEmailAddressChange}
-				passwordValidator={onPasswordChange}
-				passwordConfirmValidator={onPasswordConfirmChange}
-
-				showUsernameWarning={showUsernameWarning}
-				showEmailWarning={showEmailWarning}
-				showPasswordWarning={showPasswordWarning}
-				showConfirmPasswordWarning={showConfirmPasswordWarning}
-			/>
-		{:else if activeForm === AccountScreenEnum.validating}
-			<Validate
-				userNameValidator={onUsernameChange}
-				passwordValidator={onPasswordChange}
-				secretCodeValidator={onSecretCodeChange}
-
-				showUsernameWarning={showUsernameWarning}
-			/>
-		{:else if activeForm === AccountScreenEnum.resettingPassword}
-			<ResetPassword
-				userNameValidator={onUsernameChange}
-				emailAddressValidator={onEmailAddressChange}
-
-				showUsernameWarning={showUsernameWarning}
-				showEmailWarning={showEmailWarning}
-			/>
-		{/if}
+		<Form
+			bind:this={logInForm}
+			visible={showLogIn}
+			formType={AccountScreenEnum.loggingIn}
+		/>
+		<Form
+			bind:this={validateForm}
+			visible={showValidate}
+			formType={AccountScreenEnum.validating}
+		/>
+		<Form
+			bind:this={registerForm}
+			visible={showRegister}
+			formType={AccountScreenEnum.registering}
+		/>
+		<Form
+			bind:this={resetPasswordForm}
+			visible={showResetPassword}
+			formType={AccountScreenEnum.resettingPassword}
+		/>
 		{#if invalidForm} 
 			<FormWarning text={"One or more fields are incorrect or empty!"}/>
 			<br/>
@@ -300,15 +197,7 @@
 			<h3>{userMessage}</h3>
 		{/if}
 		{#if activeForm !== false}
-			<Button elementId={"Lets_go_button"} action={(e) => {
-				if ( checkIfFormIsValid() ) {
-					postActiveForm( )
-				}
-				else {
-					invalidForm = true;
-					window.setTimeout(()=>{ invalidForm = false; }, 2000)
-				}
-			}} buttonText={"Let's go!"}/>
+			<Button inputName={"Lets_go_button"} action={handleButtonClick} buttonText={"Let's go!"}/>
 		{/if}
 	</div>
 </div>

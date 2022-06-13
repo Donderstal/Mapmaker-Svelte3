@@ -3,18 +3,27 @@
     import Label from "./Label.svelte";
     import FormWarning	from "./FormWarning.svelte";
 
-    export let elementId;
+    export let inputName;
     export let type;
     export let placeholder;
     export let labelText;
     export let onChange;
     export let showWarning;
     export let warningText;
+
+    let input;
+
+    export const getInputValue = ( ) => {
+        return input.getValue( );
+    }
+    export const resetInputValue = ( ) => {
+        input.resetValue( );
+    }
 </script>
 
 <div>
-    <Label text={labelText} labelFor={elementId}/>
-    <Input elementId={elementId} placeholder={placeholder} type={type} onChange={onChange}/>
+    <Label text={labelText} labelFor={inputName}/>
+    <Input bind:this={input} inputName={inputName} placeholder={placeholder} type={type} onChange={onChange}/>
     {#if showWarning}
         <br/>
         <FormWarning text={warningText} />

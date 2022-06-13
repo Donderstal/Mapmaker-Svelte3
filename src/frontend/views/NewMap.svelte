@@ -5,25 +5,42 @@
 
     export let optionListener;
 
+    let nameInput;
+    let columnsInput;
+    let rowsInput;
+    let tilesheetInput
+    let form;
+    
+    export const getInputValues = ( ) => {
+        console.log(nameInput.getInputValue());
+        console.log(columnsInput.getInputValue());
+        console.log(rowsInput.getInputValue());
+        console.log(tilesheetInput.value)
+        console.log(new FormData(form))
+    }
+
     const outdoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.outdoors});
     const indoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.indoors});
     const obsoleteSheets  = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.obsolete});
 </script>
-<div>
+<form bind:this={form}>
 	<InputDiv
-	    elementId={"name-input"} placeholder={"Name your map:"} type={"text"} labelText={"Map name:"}
+        bind:this={nameInput}
+	    inputName={"name-input"} placeholder={"Name your map:"} type={"text"} labelText={"Map name:"}
         onChange={false} showWarning={false} warningText={""}
 	/>
     <InputDiv 
-        elementId={"columns-input"} placeholder={"Max columns: 24"} type={"number"} labelText={"Columns:"}
+        bind:this={columnsInput}
+        inputName={"columns-input"} placeholder={"Max columns: 24"} type={"number"} labelText={"Columns:"}
         onChange={false} showWarning={false} warningText={""}
     />
     <InputDiv 
-        elementId={"rows-input"} placeholder={"Max rows: 16"} type={"number"} labelText={"Rows:"}
+        bind:this={rowsInput}
+        inputName={"rows-input"} placeholder={"Max rows: 16"} type={"number"} labelText={"Rows:"}
         onChange={false} showWarning={false} warningText={""}
     />
     <label for="tilesheet-select">Choose a tilesheet:</label>
-	<select id="tilesheet-select" on:change={optionListener}>
+	<select bind:this={tilesheetInput} id="tilesheet-select" on:change={optionListener}>
         <option hidden disabled selected value> -- select a tilesheet -- </option>
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
@@ -41,4 +58,4 @@
             {/each}
         </optgroup>
 	</select>
-</div>
+</form>

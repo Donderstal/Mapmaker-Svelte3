@@ -10,9 +10,14 @@
 	import Canvas from "./partials/Canvas.svelte";
 
 	let activeForm = false;
-	let previewCanvas;
 	let showPreviewCanvas = false;
+
+	let previewCanvas;
 	let activePreviewName;
+
+	let newMapForm;
+	let loadMapForm;
+	let mapOverviewForm;
 
 	const resetForm = ( ) => {
 		activeForm = false;
@@ -31,6 +36,7 @@
 	const getFormOptions = ( ) => {
 		switch( activeForm ) {
 			case MainMenuEnum.createMap :
+				newMapForm.getInputValues( );
 				break;
 			case MainMenuEnum.loadMap :
 				break;
@@ -147,14 +153,14 @@
 	{/if}
 	<div class="right-item">
 		{#if activeForm == MainMenuEnum.createMap }
-			<NewMap optionListener={getSelectedOption}/>
+			<NewMap bind:this={newMapForm} optionListener={getSelectedOption}/>
 		{:else if activeForm == MainMenuEnum.loadMap }
-			<LoadMap optionListener={getSelectedOption}/>
+			<LoadMap bind:this={loadMapForm} optionListener={getSelectedOption}/>
 		{:else if activeForm == MainMenuEnum.neighbourhoodOverview }
-			<SelectOverview optionListener={getSelectedOption}/>
+			<SelectOverview bind:this={mapOverviewForm} optionListener={getSelectedOption}/>
 		{/if}
 		{#if activeForm !== false}
-			<Button elementId={"Lets_go_button"} action={() => {
+			<Button inputName={"Lets_go_button"} action={() => {
 				getFormOptions( );
 			}} buttonText={"Let's go!"}/>
 		{/if}

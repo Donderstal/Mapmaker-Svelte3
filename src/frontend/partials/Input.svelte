@@ -1,8 +1,17 @@
 <script>   
-    export let elementId;
+    export let inputName;
     export let type;
     export let placeholder;
     export let onChange;
+
+    let input;
+
+    export const getValue = ( ) => {
+        return input.value;
+    }
+    export const resetValue = ( ) => {
+        input.value = "";
+    }
 </script>
 
 <style>
@@ -15,4 +24,4 @@
     }
 </style>
 
-<input id={elementId} type={type} placeholder={placeholder} name={elementId} on:input={onChange}/>
+<input bind:this={input} type={type} placeholder={placeholder} name={inputName} on:input={onChange}/>
