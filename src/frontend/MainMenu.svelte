@@ -10,7 +10,9 @@
 	import Canvas from "./partials/Canvas.svelte";
 
 	let activeForm = false;
-	let previewCanvas = false;
+	let previewCanvas;
+	let showPreviewCanvas = false;
+	let activePreviewName;
 
 	const resetForm = ( ) => {
 		activeForm = false;
@@ -18,8 +20,13 @@
 
 	const activateForm = ( formType ) => {
 		resetForm( );
+		hidePreviewCanvas( );
 		activeForm = formType;
 	} 
+
+	const hidePreviewCanvas = ( ) => {
+		showPreviewCanvas = false;
+	}
 
 	const getFormOptions = ( ) => {
 		switch( activeForm ) {
@@ -36,11 +43,43 @@
 	}
 
 	const getSelectedOption = ( event ) => {
-		let map = $user.maps.filter((e)=>{return e.name === event.target.value})[0];
-		let sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
-		previewCanvas.setMapModel( map, sheet );
-		previewCanvas.drawTileBordersToCanvas( );
-		previewCanvas.drawGridToCanvas( );
+		switch( activeForm ) {
+			case MainMenuEnum.createMap :
+				getTilesheetPreview( event );
+				break;
+			case MainMenuEnum.loadMap :
+				getLoadMapPreview( event );
+				break;
+			case MainMenuEnum.neighbourhoodOverview :
+				break;
+			default:
+				alert('error processing form! Please reload the page')
+				break;
+		}
+	}
+
+	const getLoadMapPreview = ( event ) => {
+		showPreviewCanvas = true;
+		activePreviewName = event.target.value;
+
+		const map = $user.maps.filter((e)=>{return e.name === event.target.value})[0];
+		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
+
+		setTimeout(()=>{
+			previewCanvas.setMapModel( map, sheet );
+			previewCanvas.drawTileBordersToCanvas( );
+			previewCanvas.drawGridToCanvas( );		
+		}, 10)
+	}
+
+	const getTilesheetPreview = ( event ) => {
+		showPreviewCanvas = true;
+		activePreviewName = event.target.value;
+
+		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === event.target.value})[0];
+		setTimeout(()=>{
+			previewCanvas.setImageToCanvas( sheet );
+		}, 10)
 	}
 </script>
 <style>
@@ -62,31 +101,50 @@
 		grid-row:	bottomRow / bottomMargin;
 	}
 	.right-item {
-		grid-column: middleColumn / rightMargin;
+		grid-column: rightColumn / rightMargin;
 		grid-row: topRow / bottomRow;
 	}
 	.button-container {
 		margin-bottom: 5vh;
+	}
+	.canvas-preview-div {
+		max-width: 768px;
+	}
+	span {
+		position: fixed;
+		margin: 1vw;
+		background: rgba(0, 56, 77, 0.5);
+	}
+	span:hover {
+		color:#D82BBA;
+		cursor: pointer;
 	}
 </style>
 <div class="container">
 	<div class="header-item">
 		<h2>Julius Mapmaker</h2>
 	</div>
+	{#if showPreviewCanvas}
+		<div class="top-item canvas-preview-div">
+			<h3>{activePreviewName}</h3>
+			<span on:click|preventDefault={hidePreviewCanvas}>&#10006</span>
+			<Canvas bind:this={previewCanvas} canvastype={CanvasTypEnum.background}/>	
+		</div>
+	{:else}
 		<div class="top-item">
-		<div class="button-container">
-			<Button action={()=>activateForm(MainMenuEnum.createMap)} buttonText={"New map"}/>
+			<div class="button-container">
+				<Button action={()=>activateForm(MainMenuEnum.createMap)} buttonText={"New map"}/>
+			</div>
+			<div class="button-container">
+				<Button action={()=>activateForm(MainMenuEnum.loadMap)} buttonText={"Load map"}/>
+			</div>
 		</div>
-		<div class="button-container">
-			<Button action={()=>activateForm(MainMenuEnum.loadMap)} buttonText={"Load map"}/>
+		<div class="bottom-item">
+			<div class="button-container">
+				<Button action={()=>activateForm(MainMenuEnum.neighbourhoodOverview)} buttonText={"Map overview"}/>
+			</div>
 		</div>
-	</div>
-	<div class="bottom-item">
-		<div class="button-container">
-			<Button action={()=>activateForm(MainMenuEnum.neighbourhoodOverview)} buttonText={"Map overview"}/>
-		</div>
-		<Canvas bind:this={previewCanvas} canvastype={CanvasTypEnum.background}/>
-	</div>
+	{/if}
 	<div class="right-item">
 		{#if activeForm == MainMenuEnum.createMap }
 			<NewMap optionListener={getSelectedOption}/>

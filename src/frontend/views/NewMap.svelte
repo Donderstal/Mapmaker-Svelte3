@@ -24,6 +24,7 @@
     />
     <label for="tilesheet-select">Choose a tilesheet:</label>
 	<select id="tilesheet-select" on:change={optionListener}>
+        <option hidden disabled selected value> -- select a tilesheet -- </option>
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
                 <option value="{outdoorSheet.dataObject.key}">{outdoorSheet.dataObject.name}</option>
