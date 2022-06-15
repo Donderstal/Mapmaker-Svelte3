@@ -1,6 +1,6 @@
 <script>
 	import { MainMenuEnum } from "../enumerables/MainMenuEnum";
-	import { CanvasTypEnum } from "../enumerables/CanvasTypeEnum";
+	import { CanvasTypeEnum } from "../enumerables/CanvasTypeEnum";
 	import { user } from '../stores.ts'
 
 	import Button from "./partials/Button.svelte";
@@ -94,7 +94,7 @@
 		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
 
 		setTimeout(()=>{
-			previewCanvas.setMapModel( map, sheet );
+			previewCanvas.setMapModel( map, sheet, true );
 			previewCanvas.drawTileBordersToCanvas( );
 			previewCanvas.drawGridToCanvas( );		
 		}, 10)
@@ -156,7 +156,7 @@
 		<div class="top-item canvas-preview-div">
 			<h3>{activePreviewName}</h3>
 			<span on:click|preventDefault={hidePreviewCanvas}>&#10006</span>
-			<Canvas bind:this={previewCanvas} canvastype={CanvasTypEnum.background}/>	
+			<Canvas bind:this={previewCanvas} canvasType={CanvasTypeEnum.overview}/>	
 		</div>
 	{:else}
 		<div class="top-item">

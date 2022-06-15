@@ -1,24 +1,32 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { Grid } from '../../canvas/Grid'
+	import { CanvasTypeEnum } from "../../enumerables/CanvasTypeEnum";
 	import type { ImageModel } from "../../models/ImageModel";
 	import type { MapModel } from "../../models/MapModel";
 	import type { TileModel } from "../../models/TileModel";
 	import { GRID_BLOCK_IN_SHEET_PX, TILE_SIZE } from "../../resources/constants";
 
 	export let canvasType;
+	let centered;
 
-	let grid;
-	let canvas;
-	let context;
-	let model;
-	let sheet;
+	let grid : Grid;
+	let canvas : HTMLCanvasElement
+	let context : CanvasRenderingContext2D
+	let model : MapModel
+	let sheet : ImageModel;
 
 	onMount(() => {
 		context = canvas.getContext("2d");
+		if ( canvasType === CanvasTypeEnum.overview || canvasType === CanvasTypeEnum.tilesheet || canvasType === CanvasTypeEnum.utility ) {
+			centered = false;
+		}
+		else {
+			centered = true;
+		}
 	})
 
-	const initializeGrid = ( columns: number, rows: number ): void => {
+	export const initializeGrid = ( columns: number, rows: number ): void => {
 		canvas.width = columns * TILE_SIZE;
 		canvas.height = rows * TILE_SIZE;
         grid = new Grid( columns, rows );
@@ -37,11 +45,26 @@
 		);
 	}
 
-	export const setMapModel = ( mapModel: MapModel, tilesheet: ImageModel ): void => {
+	export const setTilesetToCanvas = ( image: ImageModel, index: number, parts: number ) : void => {
+		let imageWidth = image.image.width;
+		let imageHeight = image.image.height / parts;
+		canvas.width = imageWidth / 2;
+		canvas.height = imageHeight / 2;
+		grid = new Grid( canvas.width / GRID_BLOCK_IN_SHEET_PX, canvas.height / GRID_BLOCK_IN_SHEET_PX );
+		context.drawImage(
+			image.image, 
+			0, imageHeight * index,
+			imageWidth, imageHeight,
+			0, 0,
+			canvas.width, canvas.height
+		);
+	}
+
+	export const setMapModel = ( mapModel: MapModel, tilesheet: ImageModel, isBackground: boolean ): void => {
 		model = mapModel;
 		sheet = tilesheet;
 		initializeGrid( model.columns, model.rows );
-		setTileModelsToGridTiles( model.grid );
+		setTileModelsToGridTiles( isBackground ? model.grid : model.frontGrid );
 	}
 
     const setTileModelsToGridTiles = ( tileModelList: TileModel[] ): void => {
@@ -59,14 +82,25 @@
 	export const drawGridToCanvas = ( ): void => {
 		grid.drawTiles( context, sheet );
 	}
+
+	export const fillRect = ( x:number, y:number, width:number, height:number, color:string ): void => {
+		context.fillStyle = color;
+		context.fillRect( x, y, width, height );
+	}
 </script>
 
 <style>
-
+	.centered {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		margin: auto;
+	}
 </style>
 
 <canvas 
 	bind:this={canvas}
->
-
-</canvas>
+	class:centered={centered}
+/>

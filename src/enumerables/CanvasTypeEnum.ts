@@ -1,4 +1,4 @@
-export enum CanvasTypEnum {
+export enum CanvasTypeEnum {
     background,
     backSprites,
     foreground,

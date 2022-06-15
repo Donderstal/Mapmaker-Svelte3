@@ -36,9 +36,9 @@
 <div>
     {#if $loggedIn}
         {#if $inMapMakerMode}
-            <MapMaker/>
+            <MapMaker activeMap={activeMap}/>
         {:else if $inMapOverviewMode}
-            <MapOverview/>
+            <MapOverview activeNeighbourhood={activeNeighbourhood}/>
         {:else}
             <MainMenu prepareMapMaker={prepareMapMaker} prepareMapOveriew={prepareMapOverview}/>
         {/if}
