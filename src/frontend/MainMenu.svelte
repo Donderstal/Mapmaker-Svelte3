@@ -1,23 +1,30 @@
 <script>
 	import { MainMenuEnum } from "../enumerables/MainMenuEnum";
+	import { CanvasTypEnum } from "../enumerables/CanvasTypeEnum";
 	import { user } from '../stores.ts'
 
 	import Button from "./partials/Button.svelte";
 	import SelectOverview from "./views/SelectOverview.svelte";
 	import NewMap from "./views/NewMap.svelte";
 	import LoadMap from "./views/LoadMap.svelte";
-	import { CanvasTypEnum } from "../enumerables/CanvasTypeEnum";
 	import Canvas from "./partials/Canvas.svelte";
 
+	export let prepareMapMaker;
+	export let prepareMapOveriew;
+
 	let activeForm = false;
+	let activeFormType = false;
 	let showPreviewCanvas = false;
 
 	let previewCanvas;
 	let activePreviewName;
 
-	let newMapForm;
-	let loadMapForm;
-	let mapOverviewForm;
+	let newMapMenu;
+	$: showNewMapMenu = activeFormType === MainMenuEnum.newMap;
+	let loadMapMenu;
+	$: showLoadMapMenu = activeFormType === MainMenuEnum.loadMap;
+	let mapOverviewMenu;
+	$: showMapOverviewMenu = activeFormType === MainMenuEnum.neighbourhoodOverview;
 
 	const resetForm = ( ) => {
 		activeForm = false;
@@ -26,21 +33,36 @@
 	const activateForm = ( formType ) => {
 		resetForm( );
 		hidePreviewCanvas( );
-		activeForm = formType;
+		activeFormType = formType;
+		activeForm = getActiveForm( );
 	} 
 
 	const hidePreviewCanvas = ( ) => {
 		showPreviewCanvas = false;
 	}
 
+	const getActiveForm = ( ) => {
+		switch( activeFormType ) {
+			case MainMenuEnum.newMap :
+				return newMapMenu;
+			case MainMenuEnum.loadMap :
+				return loadMapMenu;
+			case MainMenuEnum.neighbourhoodOverview :
+				return mapOverviewMenu;
+		}
+	}
+
 	const getFormOptions = ( ) => {
-		switch( activeForm ) {
-			case MainMenuEnum.createMap :
-				newMapForm.getInputValues( );
+		const inputValues = activeForm.getInputValues( );
+		switch( activeFormType ) {
+			case MainMenuEnum.newMap :
+				prepareMapMaker(inputValues, MainMenuEnum.newMap);
 				break;
 			case MainMenuEnum.loadMap :
+				prepareMapMaker(inputValues, MainMenuEnum.loadMap);
 				break;
 			case MainMenuEnum.neighbourhoodOverview :
+				prepareMapOveriew(inputValues);
 				break;
 			default:
 				alert('error processing form! Please reload the page')
@@ -49,8 +71,8 @@
 	}
 
 	const getSelectedOption = ( event ) => {
-		switch( activeForm ) {
-			case MainMenuEnum.createMap :
+		switch( activeFormType ) {
+			case MainMenuEnum.newMap :
 				getTilesheetPreview( event );
 				break;
 			case MainMenuEnum.loadMap :
@@ -139,7 +161,7 @@
 	{:else}
 		<div class="top-item">
 			<div class="button-container">
-				<Button action={()=>activateForm(MainMenuEnum.createMap)} buttonText={"New map"}/>
+				<Button action={()=>activateForm(MainMenuEnum.newMap)} buttonText={"New map"}/>
 			</div>
 			<div class="button-container">
 				<Button action={()=>activateForm(MainMenuEnum.loadMap)} buttonText={"Load map"}/>
@@ -152,13 +174,9 @@
 		</div>
 	{/if}
 	<div class="right-item">
-		{#if activeForm == MainMenuEnum.createMap }
-			<NewMap bind:this={newMapForm} optionListener={getSelectedOption}/>
-		{:else if activeForm == MainMenuEnum.loadMap }
-			<LoadMap bind:this={loadMapForm} optionListener={getSelectedOption}/>
-		{:else if activeForm == MainMenuEnum.neighbourhoodOverview }
-			<SelectOverview bind:this={mapOverviewForm} optionListener={getSelectedOption}/>
-		{/if}
+		<NewMap bind:this={newMapMenu} visible={showNewMapMenu} optionListener={getSelectedOption}/>
+		<LoadMap bind:this={loadMapMenu} visible={showLoadMapMenu} optionListener={getSelectedOption}/>
+		<SelectOverview bind:this={mapOverviewMenu} visible={showMapOverviewMenu} optionListener={getSelectedOption}/>
 		{#if activeForm !== false}
 			<Button inputName={"Lets_go_button"} action={() => {
 				getFormOptions( );

@@ -11,6 +11,4 @@ export type UserModel = {
 
     maps: MapModel[],
     neighbourhoods: NeighbourhoodModel[],
-
-    activeMap?: MapModel
 }

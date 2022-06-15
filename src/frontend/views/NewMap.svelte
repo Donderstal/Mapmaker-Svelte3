@@ -4,26 +4,33 @@
     import { TilesheetTypeEnum } from "../../enumerables/TilesheetTypeEnum";
 
     export let optionListener;
+    export let visible;
 
     let nameInput;
     let columnsInput;
     let rowsInput;
     let tilesheetInput
-    let form;
-    
+
     export const getInputValues = ( ) => {
-        console.log(nameInput.getInputValue());
-        console.log(columnsInput.getInputValue());
-        console.log(rowsInput.getInputValue());
-        console.log(tilesheetInput.value)
-        console.log(new FormData(form))
+        return {
+            "name": nameInput.getInputValue(),
+            "columns": columnsInput.getInputValue(),
+            "rows": rowsInput.getInputValue(),
+            "tilesheet": tilesheetInput.value
+        }
     }
 
     const outdoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.outdoors});
     const indoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.indoors});
     const obsoleteSheets  = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.obsolete});
 </script>
-<form bind:this={form}>
+<style>
+    .invisible {
+        display: none;
+        visibility: hidden;
+    }
+</style>
+<div class:invisible={!visible}>
 	<InputDiv
         bind:this={nameInput}
 	    inputName={"name-input"} placeholder={"Name your map:"} type={"text"} labelText={"Map name:"}
@@ -40,7 +47,7 @@
         onChange={false} showWarning={false} warningText={""}
     />
     <label for="tilesheet-select">Choose a tilesheet:</label>
-	<select bind:this={tilesheetInput} id="tilesheet-select" on:change={optionListener}>
+	<select name="tilesheet-select" bind:this={tilesheetInput} on:change={optionListener}>
         <option hidden disabled selected value> -- select a tilesheet -- </option>
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
@@ -58,4 +65,4 @@
             {/each}
         </optgroup>
 	</select>
-</form>
+</div>

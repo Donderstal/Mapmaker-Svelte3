@@ -1,7 +1,9 @@
-import { writable, get } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { setUserData } from './helpers/setUserData';
 
 export const loggedIn = writable();
+export const inMapMakerMode = writable();
+export const inMapOverviewMode = writable();
 export const user = writable();
 export const currentScreen = writable();
 
@@ -16,6 +18,7 @@ export const onUserLogin = ( ) => {
 	} ).then( returner => {
 		const userData = setUserData( returner["maps"], returner["neighbourhoods"] );
 		user.set( userData );
-	} );
-	loggedIn.set( true );
+	} ).then( () => {
+		loggedIn.set( true );
+    } );
 }
