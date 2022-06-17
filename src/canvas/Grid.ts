@@ -66,9 +66,13 @@ export class Grid {
             context.lineWidth = .5
             context.strokeStyle = 'black'
             context.moveTo( e.x, e.y );
-            context.lineTo( e.x, e.y + TILE_SIZE );
-            context.moveTo( e.x, e.y );
             context.lineTo( e.x + TILE_SIZE, e.y );
+            context.moveTo( e.x + TILE_SIZE, e.y );
+            context.lineTo( e.x + TILE_SIZE, e.y + TILE_SIZE );
+            context.moveTo( e.x + TILE_SIZE, e.y + TILE_SIZE );
+            context.lineTo( e.x, e.y + TILE_SIZE );
+            context.moveTo( e.x, e.y + TILE_SIZE );
+            context.lineTo( e.x, e.y );
             context.stroke();
         } )
     }
