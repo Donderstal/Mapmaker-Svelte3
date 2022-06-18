@@ -7,6 +7,7 @@
 	//enumerables
 	import { AccountScreenEnum } from "../enumerables/AccountScreenEnum";
 	import { onUserLogin } from "../stores";
+	import Header from "./partials/Header.svelte";
 	
 	//login system navigation
 	let activeForm = false;
@@ -146,7 +147,7 @@
 
 <div class="container">
 	<div class="header-item">
-		<h2>Julius Mapmaker</h2>
+		<Header/>
 	</div>
 	<div class="top-item">
 		<div class="button-container">

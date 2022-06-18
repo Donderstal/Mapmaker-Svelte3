@@ -8,6 +8,7 @@
 	import NewMap from "./views/NewMap.svelte";
 	import LoadMap from "./views/LoadMap.svelte";
 	import Canvas from "./partials/Canvas.svelte";
+	import Header from "./partials/Header.svelte";
 
 	export let prepareMapMaker;
 	export let prepareMapOveriew;
@@ -150,7 +151,7 @@
 </style>
 <div class="container">
 	<div class="header-item">
-		<h2>Julius Mapmaker</h2>
+		<Header/>
 	</div>
 	{#if showPreviewCanvas}
 		<div class="top-item canvas-preview-div">
