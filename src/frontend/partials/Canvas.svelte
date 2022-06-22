@@ -5,9 +5,10 @@
 	import type { ImageModel } from "../../models/ImageModel";
 	import type { MapModel } from "../../models/MapModel";
 	import type { TileModel } from "../../models/TileModel";
-	import { TILE_SIZE } from "../../resources/constants";
+	import { MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE } from "../../resources/constants";
 
-	export let canvasType;
+	export let canvasType : CanvasTypeEnum;
+	export let spriteModel : ImageModel = undefined;
 
 	let grid : Grid;
 	let canvas : HTMLCanvasElement
@@ -15,8 +16,20 @@
 	let model : MapModel
 	let sheet : ImageModel;
 
+	let invisible : boolean = false;
+
 	onMount(() => {
 		context = canvas.getContext("2d");
+		if ( canvasType == CanvasTypeEnum.spriteCanvas ) {
+			console.log(spriteModel);
+			console.log(typeof spriteModel.dataObject);
+			if ( spriteModel.dataObject.hasOwnProperty("className") ) {
+				setCharacterToCanvas( spriteModel );
+			}
+			else {
+				setImageToCanvas( spriteModel );
+			}
+		}
 	})
 
 	export const initializeGrid = ( columns: number, rows: number ): void => {
@@ -34,6 +47,18 @@
 			image.image.width, image.image.height,
 			0, 0,
 			canvas.width, canvas.height
+		);
+	}
+
+	export const setCharacterToCanvas = ( image: ImageModel ) : void => {
+		canvas.width = MAP_SPRITE_WIDTH_IN_SHEET;
+		canvas.height = MAP_SPRITE_HEIGHT_IN_SHEET;
+		context.drawImage(
+			image.image, 
+			0, 0,
+			MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET,
+			0, 0,
+			MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET,
 		);
 	}
 
@@ -83,13 +108,30 @@
 		console.log("x: " + e.offsetX);
 		console.log("y: " + e.offsetY);
 	}
+
+	export const hideCanvas = ( ) =>{
+		invisible = true;
+	}
+
+	export const showCanvas = ( ) => {
+		invisible = false;
+	}
 </script>
 
 <style>
-
+	.invisible {
+		display: none;
+		visibility: hidden;
+		pointer-events: none;
+	}
+	.margin { 
+		margin: 1vh;
+	}
 </style>
 
 <canvas 
 	bind:this={canvas}
 	on:click={registerClick}
+	class:invisible={invisible}
+	class:margin={canvasType === CanvasTypeEnum.spriteCanvas}
 />

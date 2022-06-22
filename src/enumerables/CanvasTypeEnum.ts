@@ -5,5 +5,6 @@ export enum CanvasTypeEnum {
     frontSprites,
     tilesheet,
     utility,
-    overview
+    overview,
+    spriteCanvas
 }

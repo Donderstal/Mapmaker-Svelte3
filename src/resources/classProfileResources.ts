@@ -37,8 +37,6 @@ const profileList = [
     BLACK_PONY_TAIL_LADY, ROBOT, PINK_HAIR_NERD_LADY, BLONDE_NERD_LADY, DARK_HAIR_NERD_LADY, MAIN_CHARACTER
 ];
 
-const spriteFolder = '/png-files/sprites/';
-
 export const getProfileName = ( pngName ) => {
     switch ( pngName ) {
         case "neckbeard.png":
@@ -194,7 +192,7 @@ const getCharacterSpriteModel = ( className ) => {
 
     let model: CharacterSpriteModel = {
         className: className,
-        src: '/png-files/sprites/' + png
+        src: png
     };
     return model;
 };

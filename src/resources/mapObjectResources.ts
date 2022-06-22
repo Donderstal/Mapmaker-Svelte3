@@ -113,11 +113,11 @@ const getDoorOrWindow = ( width, height ) => {
 }
 
 
-const getSignData = ( heightInBlocks ) => {
+const getSignData = ( widthInBlocks, heightInBlocks ) => {
     return {
         "dimensional_alignment": "STANDARD",
+        "width_blocks": widthInBlocks,
         "height_blocks": heightInBlocks,
-        "width_blocks": 1,
         "not_grounded": true,
         "idle_animation": true
     }
@@ -179,30 +179,17 @@ export const spriteData = {
         "src": "bar_versionB.png",
         ...getGroundedAtBottom( 9, 4 )
     },
-    "bar_lights_off": {
-        "src": "bar_lights_off.png",
-        "dimensional_alignment": "STANDARD",
-        "height_blocks": 1,
-        "width_blocks": 4,
-        "not_grounded": true
-    },
-    "bar_lights_on": {
-        "src": "bar_lights_on.png",
-        "dimensional_alignment": "STANDARD",
-        "height_blocks": 1,
-        "width_blocks": 4,
-        "not_grounded": true
-    },
-    "bar_sign_on": {
-        "src": "bar_sign_on.png",
-        "dimensional_alignment": "STANDARD",
-        "height_blocks": 2,
-        "width_blocks": 3,
-        "not_grounded": true
+    "bar_lights": {
+        "src": "bar_lights.png",
+        ...getSignData( 4, 1 )
     },
     "bar_sign": {
-        "dimensional_alignment": "STANDARD",
         "src": "bar_sign.png",
+        ...getSignData( 3, 2 )
+    },
+    "bar_sign_old": {
+        "dimensional_alignment": "STANDARD",
+        "src": "bar_sign_old.png",
         "height_blocks": 1,
         "width_blocks": 1.8125,
         "not_grounded": true,
@@ -215,6 +202,20 @@ export const spriteData = {
     "Bench_Green" :{
         "src": "bench_green.png",
         ...TWO_WIDE_SPRITE
+    },
+    "big_coffee_cup_left": {
+        "src": "big_coffee_cup_left.png",
+        "dimensional_alignment": "STANDARD",
+        "height_blocks": 2,
+        "width_blocks": 2,
+        "not_grounded": true
+    },
+    "big_coffee_cup_right": {
+        "src": "big_coffee_cup_right.png",
+        "dimensional_alignment": "STANDARD",
+        "height_blocks": 2,
+        "width_blocks": 2,
+        "not_grounded": true
     },
     "bin_a" :{
         "src": "bin_a.png",
@@ -305,6 +306,10 @@ export const spriteData = {
         "height_blocks": 4,
         "width_blocks": 1,
     },   
+    "cafe": {
+        "src": "cafe.png",
+        ...getGroundedAtBottom( 8, 8 )
+    },
     "can_red_1" : {
         "src": "Can_Z1.png",
         ...getBackgroundItem( 0.28125, 0.3125 )
@@ -336,6 +341,10 @@ export const spriteData = {
     "computer_table" : {
         "src": "computer_table.png",
         ...getTwoHighSprite( true )
+    },
+    "computer_table_with_chair": {
+        "src": "computer_table_with_chair.png",
+        ...getGroundedAtBottom(1, 3)
     },
     "Couch_Blue" : {
         "src": "couch.png",
@@ -601,7 +610,7 @@ export const spriteData = {
     },
     "hotel_sign" : {
         "src": "hotel_sign.png",
-        ...getSignData( 2.21875 )
+        ...getSignData( 1, 2.21875 )
     },
     "house_plant" : {
         "src": "house_plant.png",
@@ -792,22 +801,22 @@ export const spriteData = {
     },
     "Sign_01" : {
         "src": "sign1.png",
-        ...getSignData( 1.75 )
+        ...getSignData( 1, 1.75 )
     },
     "Sign_02" : {
         "src": "sign2.png",
         "dimensional_alignment": "STANDARD",
-        ...getSignData( 1.75 )
+        ...getSignData( 1, 1.75 )
     },
     "Sign_03" : {
         "src": "sign3.png",
         "dimensional_alignment": "STANDARD",
-        ...getSignData( 1 )
+        ...getSignData( 1, 1 )
     },
     "Sign_04" : {
         "src": "sign4.png",
         "dimensional_alignment": "STANDARD",
-        ...getSignData( 1 )
+        ...getSignData( 1, 1 )
     },
     "Single_Bed" : { 
         "src": "single_bed.png",
@@ -1021,10 +1030,19 @@ export const spriteData = {
         "src": "car_a.png",
         ...STANDARD_CAR
     },
-    "car_b" : {
+    "car_a_colour_b": {
+        "src": "car_a_colour_b.png",
+        ...STANDARD_CAR
+    },
+    "car_b": {
         "src": "car_b.png",
         ...STANDARD_CAR
     },
+    "car_b_colour_b" : {
+        "src": "car_b_colour_b.png",
+        ...STANDARD_CAR
+    },
+
     "car_c" : {
         "src": "car_c.png",
         ...STANDARD_CAR
