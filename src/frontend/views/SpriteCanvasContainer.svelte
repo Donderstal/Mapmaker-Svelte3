@@ -5,6 +5,8 @@
 	import { user } from '../../stores';
 	import Canvas from '../partials/Canvas.svelte'
 
+	export let hide;
+
 	let spriteFilterSelect : HTMLSelectElement;
 	let selection : SpriteTypesEnum = SpriteTypesEnum.all;
 
@@ -61,7 +63,7 @@
 		visibility: hidden;
 	}
 </style>
-<div>
+<div class:invisible={hide}>
 	<div>
 		<select name="sprite-type-select" bind:this={spriteFilterSelect} on:change={()=>{handleSpriteFilterChange()}}>
 			<option selected>All</option>

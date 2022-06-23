@@ -18,7 +18,7 @@
 	.ui-container-grid {
 		display: grid;
 		grid-template-columns: [leftUiColumn] 10vw [centerLeftUiColumn] 15vw [centerRightUiColumn] 20vw [rightUiColumn] 20vw;
-		grid-template-rows: [uiRow] 25vh;
+		grid-template-rows: [uiRow] 22.5vh;
 		font-size: 2vh;
 	}
 	.left-ui-item {
@@ -37,20 +37,16 @@
 		grid-column: rightUiColumn;
 		grid-row: uiRow;
 		display: grid;
-		grid-template-columns: [leftTileColumn] 7.5vw [rightTileColumn] 12.5vw;
-		grid-template-rows: [headerRow] 5vh [uiRow] 20vh;
+		grid-template-columns: [tileColumn] 20vw;
+		grid-template-rows: [headerRow] 5vh [uiRow] 17.5vh;
 	}
-	.header-tile-column {
-		grid-column: rightTileColumn;
+	.header-tile-row {
+		grid-column: tileColumn;
 		grid-row: headerRow;
 	}
-	.left-tile-column {
-		grid-column: leftTileColumn;
+	.tile-row {
+		grid-column: tileColumn;
 		grid-row: uiRow
-	}
-	.right-tile-column {
-		grid-column: rightTileColumn;
-		grid-row: uiRow;
 	}
 	h4 {
 		margin: 0 auto 1vh auto;
@@ -120,17 +116,10 @@
 		</table>
 	</div>
 	<div class="right-ui-item">
-		<div class="header-tile-column">
+		<div class="header-tile-row">
 			<h4>Selection</h4>
 		</div>
-		<div class="left-tile-column">
-			<p>Angle: <span> 0 </span></p>
-			<p>Mirrored: <span> true </span></p>
-		</div>
-		<div class="right-tile-column">
-			<div>
-				<img src="/png-files/ui/Editing-Flip-Vertical-icon.png" alt="clickable icon for mirroring tile"/>
-			</div>
+		<div class="tile-row">
 			<img src="/png-files/ui/curved-arrow.png" alt="turn tile right"/>
 			<Canvas bind:this={utilityCanvas} canvasType={CanvasTypeEnum.utility}/>		
 			<img src="/png-files/ui/curved-arrow.png" alt="turn tile left" class="flipped-img"/>

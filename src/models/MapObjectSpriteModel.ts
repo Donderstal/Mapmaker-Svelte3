@@ -17,7 +17,7 @@ export type MapObjectSpriteModel = {
     groundedAtBottom: boolean,
     isCar: boolean,
 
-    movementFrames?: object[],
+    movementFrames?: object,
     idleAnimationFrames?: object[],
     collectableType?: string
     tileAlignment?: string,

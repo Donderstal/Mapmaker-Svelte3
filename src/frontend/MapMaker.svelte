@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { MapModel } from '../models/MapModel';
-	import Header from './partials/Header.svelte';
 	import { user } from '../stores';
 	import MapCanvasContainer from './views/MapCanvasContainer.svelte';
 	import MapTilesheetsContainer from './views/MapTilesheetsContainer.svelte';
 	import type { ImageModel } from '../models/ImageModel';
 	import MapUiContainer from './views/MapUiContainer.svelte';
+	import SpriteCanvasContainer from './views/SpriteCanvasContainer.svelte';
+	import { CanvasTypeEnum } from '../enumerables/CanvasTypeEnum';
 
 	export let activeMap : MapModel;
 	let activeSheet : ImageModel;
@@ -15,6 +16,9 @@
 	let mapTilesheetsContainer;
 	let mapUiContainer;
 
+	let hideTilesheets = false;
+	let hideSprites = false;
+
 	onMount(()=>{
 		let tileSheets : ImageModel[] = Object.values($user.tilesets);
 		activeSheet = tileSheets.filter((e)=>{return e.dataObject.key === activeMap.tileSet})[0];
@@ -22,17 +26,25 @@
 		mapTilesheetsContainer.initializeTilesheetColumn( activeSheet );
 		mapCanvasContainer.initializeMapMakerCanvases( activeMap, activeSheet );
 		mapUiContainer.initializeUiColumn( );
+		handleEditModeSwitch( CanvasTypeEnum.frontSprites );
 	})
+
+	const handleEditModeSwitch = ( type : CanvasTypeEnum ) : void => {
+		if ( type === CanvasTypeEnum.background || type === CanvasTypeEnum.foreground ) {
+			hideTilesheets = false;
+			hideSprites = true;
+		}
+		else {
+			hideTilesheets = true;
+			hideSprites = false;
+		}
+	}
 </script>
 <style>
 	.container {
 		display: grid;
 		grid-template-columns: [leftMargin] 5vw [leftColumn] 65vw [rightColumn] 25vw [rightMargin] 5vw;
-		grid-template-rows: [topMargin] 5vh [center] 65vh [bottomRow] 25vh [bottomMargin] 5vh;
-	}
-	.header-item {
-		grid-column: leftColumn / rightColumn;
-		grid-row: topMargin;
+		grid-template-rows: [topMargin] 2.5vh [center] 72.5vh [bottomRow] 22.5vh [bottomMargin] 2.5vh;
 	}
 	.center-item {
 		grid-column: leftColumn;
@@ -56,16 +68,14 @@
 	}
 </style>
 <div class="container">
-	<div class="header-item">
-		<Header/>
-	</div>
 	<div class="center-item">
-		<MapCanvasContainer bind:this={mapCanvasContainer}/>
+		<MapCanvasContainer bind:this={mapCanvasContainer} handleEditModeSwitch={handleEditModeSwitch}/>
 	</div>
 	<div class="bottom-item">
 		<MapUiContainer bind:this={mapUiContainer}/>
 	</div>
 	<div class="right-item">
-		<MapTilesheetsContainer bind:this={mapTilesheetsContainer} />
+		<SpriteCanvasContainer hide={hideSprites}/>
+		<MapTilesheetsContainer bind:this={mapTilesheetsContainer} hide={hideTilesheets}/>
 	</div>
 </div>

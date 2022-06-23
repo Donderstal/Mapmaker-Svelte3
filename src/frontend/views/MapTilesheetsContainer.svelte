@@ -5,6 +5,8 @@
 
 	import Canvas from '../partials/Canvas.svelte';
 
+	export let hide;
+
 	let tilesheetCanvasLeft  : Canvas;
 	let tilesheetCanvasRight : Canvas;
 	let activeSheet : ImageModel
@@ -29,7 +31,13 @@
 		}
 	}
 </script>
-<div>
+<style>
+	.invisible {
+		display: none;
+		visibility: hidden;
+	}
+</style>
+<div class:invisible={hide}>
 	<Canvas bind:this={tilesheetCanvasLeft} canvasType={CanvasTypeEnum.tilesheet}/>	
 	<Canvas bind:this={tilesheetCanvasRight} canvasType={CanvasTypeEnum.tilesheet}/>	
 </div>
