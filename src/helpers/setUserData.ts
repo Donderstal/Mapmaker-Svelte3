@@ -13,6 +13,8 @@ import { RoadAlignmentEnum } from '../enumerables/RoadAlignmentEnum';
 import { getTileSheetModels } from '../resources/tilesheetResources';
 import { getClassProfiles } from '../resources/classProfileResources';
 import { getMapObjectSpriteModels } from '../resources/mapObjectResources';
+import { getCharacterImageModelFromSpriteModel, getMapObjectImageModelFromSpriteModel } from './canvasHelpers';
+import { DirectionEnum } from '../enumerables/DirectionEnum';
 
 export const setUserData = ( maps: object[], neighbourhoods: object[] ) => {
     const availableMaps = Object.keys( maps ).map( ( mapKey ) => {
@@ -34,26 +36,12 @@ export const setUserData = ( maps: object[], neighbourhoods: object[] ) => {
 
 const initCharacterSprites = ( ): ImageModel[] => {
     const characters = getClassProfiles();
-    return characters.map( ( character ) => {
-        const image: ImageModel = {
-            image: new Image( ),
-            dataObject: character
-        }
-        image.image.src = "/png-files/sprites/" + character.src;
-        return image;
-    } )
+    return characters.map( getCharacterImageModelFromSpriteModel );
 }
 
 const initMapObjectSprites = ( ): ImageModel[] => {
     const mapObjectSprites = getMapObjectSpriteModels();
-    return mapObjectSprites.map( ( spriteModel ) => {
-        const image: ImageModel = {
-            image: new Image( ),
-            dataObject: spriteModel
-        }
-        image.image.src = "/png-files/sprite-assets/" + spriteModel.src;
-        return image;
-    } )
+    return mapObjectSprites.map( getMapObjectImageModelFromSpriteModel );
 }
 
 const initTilesheets = ( ): ImageModel[] => {
@@ -181,7 +169,7 @@ export const initCharacterModel = ( characterData ): CharacterModel => {
         sprite: characterData.sprite,
         row: characterData.row,
         column: characterData.column == undefined ? characterData.col : characterData.column,
-        direction: characterData.direction
+        direction: directionStringHelper(characterData.direction)
     };
     return characterModel;
 }
@@ -191,7 +179,7 @@ export const initMapObjectModel = ( mapObjectData ): MapObjectModel => {
         type: mapObjectData.type,
         row: mapObjectData.row,
         column: mapObjectData.column == undefined ? mapObjectData.col : mapObjectData.column,
-        direction: mapObjectData.direction == undefined ? null : mapObjectData.direction
+        direction: mapObjectData.direction == undefined ? DirectionEnum.down : directionStringHelper(mapObjectData.direction)
     };
     return mapObjectModel;
 }
@@ -204,4 +192,22 @@ export const initDoorModel = ( doorData ): DoorModel => {
         direction: doorData.direction
     };
     return doorModel;
+}
+
+const directionStringHelper = ( direction: string | number ) => {
+    if ( typeof direction === "number" ) {
+        return direction as DirectionEnum;
+    }
+    if ( direction === "FACING_LEFT" ) {
+        return DirectionEnum.left;
+    }
+    if ( direction === "FACING_UP" ) {
+        return DirectionEnum.up;
+    }
+    if ( direction === "FACING_RIGHT" ) {
+        return DirectionEnum.right;
+    }
+    if ( direction === "FACING_DOWN" ) {
+        return DirectionEnum.down;
+    }
 }
