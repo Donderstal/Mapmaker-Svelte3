@@ -16,7 +16,7 @@
 	let frontTilesCanvas: Canvas;
 	let frontSpritesCanvas: Canvas;
 	let activeCanvas: CanvasTypeEnum = CanvasTypeEnum.frontSprites;
-
+		
 	export const initializeMapMakerCanvases = ( activeMapModel : MapModel, activeSheetModel : ImageModel ) : void => {
 		activeMap = activeMapModel;
 		activeSheet = activeSheetModel;
@@ -35,6 +35,12 @@
 	const initSpriteCanvas = ( canvas : Canvas, isBackground : boolean ) : void => {
 		canvas.setMapModel( activeMap, activeSheet, isBackground );
 		canvas.drawTileBordersToCanvas( );
+		if ( canvas === backSpritesCanvas ) {
+			canvas.drawSpritesToCanvas( [ ...activeMap.mapObjects, ...activeMap.characters ] );
+		}
+		else {
+			canvas.drawSpritesToCanvas([])
+		}
 	}
 	
 	const activateCanvasEditMode = ( type : CanvasTypeEnum ) : void => {

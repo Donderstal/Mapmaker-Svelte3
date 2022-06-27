@@ -1,7 +1,8 @@
 export const GRID_BLOCK_IN_SHEET_PX = 64
 export const TILE_SIZE = window.innerHeight > 1000 ? 40 : 32;
 export const CANVAS_COLUMNS                = 24
-export const CANVAS_ROWS                   = 16
+export const CANVAS_ROWS = 16
+export const SIZE_DIVIDER = GRID_BLOCK_IN_SHEET_PX / TILE_SIZE;
 
 export const getBasePixelBlockSize = ( ) => {
     let blockSize = Math.ceil(

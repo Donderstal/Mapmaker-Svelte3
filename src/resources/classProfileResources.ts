@@ -200,3 +200,5 @@ const getCharacterSpriteModel = ( className ) => {
 export const getClassProfiles = () => {
     return profileList.map( ( e ) => { return getCharacterSpriteModel( e ); } );
 }
+
+export const characterSpriteModels = getClassProfiles();

@@ -30,7 +30,14 @@ export class Grid {
         }
     }
 
-    setTileModelsToTiles( tileModelList: TileModel[] ) {
+    getTileAtCell( column: number, row: number ): Tile {
+        let filteredArray = this.tiles.filter( ( e ) => {
+            return e.column === column && e.row === row;
+        } );
+        return filteredArray[0];
+    }
+
+    setTileModelsToTiles( tileModelList: TileModel[] ): void {
         tileModelList.forEach( ( model, index ) => {
             this.setTileModelToTile( model, index );
         } );

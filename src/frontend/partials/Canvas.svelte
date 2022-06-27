@@ -10,6 +10,11 @@
 	import { SpriteSheetAlignmentEnum } from "../../enumerables/SpriteSheetAlignmentEnum";
 	import { FACING_DOWN, FACING_UP, GRID_BLOCK_IN_SHEET_PX, MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE } from "../../resources/constants";
 	import { Grid } from '../../canvas/Grid'
+	import { drawSpriteToTileOnCanvas, drawToFittingCanvas, getImageModelForCharacter, getImageModelForObject, getSpriteFrame } from "../../helpers/canvasHelpers";
+import type { MapObjectModel } from "../../models/MapObjectModel";
+import type { CharacterModel } from "../../models/CharacterModel";
+import type { Tile } from "../../canvas/Tile";
+import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
 
 	export let canvasType : CanvasTypeEnum;
 	export let spriteModel : ImageModel = undefined;
@@ -47,72 +52,31 @@
     }
 	
 	export const setImageToCanvas = ( image: ImageModel ) : void => {
-		canvas.width = image.image.width / 2;
-		canvas.height = image.image.height / 2;
-		context.drawImage(
-			image.image, 
-			0, 0,
-			image.image.width, image.image.height,
-			0, 0,
-			canvas.width, canvas.height
-		);
+		drawToFittingCanvas( image, canvas, 0, 0, image.image.width, image.image.height, 0, 0);
 	}
 
 	const setCharacterToCanvas = ( image: ImageModel ) : void => {
-		canvas.width = MAP_SPRITE_WIDTH_IN_SHEET;
-		canvas.height = MAP_SPRITE_HEIGHT_IN_SHEET;
-		context.drawImage(
-			image.image, 
-			0, 0,
-			MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET,
-			0, 0,
-			MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET,
-		);
+		drawToFittingCanvas( image, canvas, 0, 0, MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET, 0, 0);
 	}
 
 	const setSpriteFrameToCanvas = ( image: ImageModel ) : void => {
 		const objectSpriteModel : MapObjectSpriteModel = image.dataObject as MapObjectSpriteModel;
 		const widthInSheet = objectSpriteModel.widthBlocks * GRID_BLOCK_IN_SHEET_PX;
 		const heightInSheet = objectSpriteModel.heightBlocks * GRID_BLOCK_IN_SHEET_PX;
-		canvas.width = widthInSheet / 2;
-		canvas.height = heightInSheet / 2;
-		context.drawImage(
-			image.image, 
-			0, 0,
-			widthInSheet, heightInSheet,
-			0, 0,
-			canvas.width, canvas.height
-		);
+		drawToFittingCanvas( image, canvas, 0, 0, widthInSheet, heightInSheet, 0, 0);
 	}
 
 	const setAlignedSpriteFrameToCanvas = ( image: ImageModel, direction: number = FACING_DOWN ) : void => {
 		const objectSpriteModel : MapObjectSpriteModel = image.dataObject as MapObjectSpriteModel;
 		const widthInSheet = ((direction == FACING_DOWN || direction == FACING_UP) ? objectSpriteModel.vertWidthBlocks : objectSpriteModel.horiWidthBlocks) * GRID_BLOCK_IN_SHEET_PX;
 		const heightInSheet = ((direction == FACING_DOWN || direction == FACING_UP) ? objectSpriteModel.vertHeightBlocks : objectSpriteModel.horiHeightBlocks) * GRID_BLOCK_IN_SHEET_PX;
-		const frame : {x: number, y: number}[] = objectSpriteModel.movementFrames[direction];
-		canvas.width = widthInSheet / 2;
-		canvas.height = heightInSheet / 2;
-		context.drawImage(
-			image.image, 
-			frame[0].x, frame[0].y,
-			widthInSheet, heightInSheet,
-			0, 0,
-			canvas.width, canvas.height
-		);
+		const frames : {x: number, y: number}[] = objectSpriteModel.movementFrames[direction];
+		drawToFittingCanvas( image, canvas, frames[0].x, frames[0].y, widthInSheet, heightInSheet, 0, 0);
 	}
 
 	export const setTilesetToCanvas = ( image: ImageModel, index: number, parts: number ) : void => {
-		let imageWidth = image.image.width;
 		let imageHeight = image.image.height / parts;
-		canvas.width = imageWidth / 2;
-		canvas.height = imageHeight / 2;
-		context.drawImage(
-			image.image, 
-			0, imageHeight * index,
-			imageWidth, imageHeight,
-			0, 0,
-			canvas.width, canvas.height
-		);
+		drawToFittingCanvas( image, canvas, 0, imageHeight * index, image.image.width, imageHeight, 0, 0);
 	}
 
 	export const setMapModel = ( mapModel: MapModel, tilesheet: ImageModel, isBackground: boolean ): void => {
@@ -154,6 +118,31 @@
 
 	export const showCanvas = ( ) => {
 		invisible = false;
+	}
+
+	export const drawSpritesToCanvas = ( spriteModelsArray: (CharacterModel|MapObjectModel)[]): void => {
+		spriteModelsArray.forEach((model: CharacterModel|MapObjectModel)=>{
+			console.log(model);
+			const tile = grid.getTileAtCell(model.column, model.row);
+			if ( model.hasOwnProperty('sprite') ) {
+				drawCharacterToCanvas( model as CharacterModel, tile );
+			}
+			else {
+				drawMapObjectToCanvas( model as MapObjectModel, tile );
+			}
+		});
+	}
+
+	const drawCharacterToCanvas = ( character: CharacterModel, tile: Tile ) : void => {
+		const imageModel : ImageModel = getImageModelForCharacter( character );
+		const spriteFrame : SpriteFrameModel = getSpriteFrame( imageModel, character.direction );
+		drawSpriteToTileOnCanvas( imageModel, canvas, spriteFrame, tile );
+	}
+
+	const drawMapObjectToCanvas = ( mapObject: MapObjectModel, tile: Tile ) : void => {
+		const imageModel : ImageModel = getImageModelForObject( mapObject );
+		const spriteFrame : SpriteFrameModel = getSpriteFrame( imageModel, mapObject.direction );
+		drawSpriteToTileOnCanvas( imageModel, canvas, spriteFrame, tile );
 	}
 </script>
 

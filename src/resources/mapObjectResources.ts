@@ -1112,7 +1112,7 @@ export const spriteData = {
     }
 }
 
-export const getMapObjectSpriteModels = (  ) => {
+export const getMapObjectSpriteModels = (): MapObjectSpriteModel[] => {
     return Object.entries( spriteData ).map( ( e ) => {
         const key = e[0];
         const value = e[1];
@@ -1154,3 +1154,5 @@ export const getMapObjectSpriteModels = (  ) => {
         return model;
     } )
 }
+
+export const mapObjectSpriteModels = getMapObjectSpriteModels();
