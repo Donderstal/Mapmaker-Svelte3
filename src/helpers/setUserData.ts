@@ -77,6 +77,12 @@ export const initMapModel = ( mapData ): MapModel => {
         mapObjects: mapData.mapObjects != undefined 
             ? mapData.mapObjects.map( ( mapObject ) => { return initMapObjectModel( mapObject ) } )
             : [],
+        frontCharacters: mapData.frontCharacters != undefined
+            ? mapData.frontCharacters.map( ( character ) => { return initCharacterModel( character ) } )
+            : [],
+        frontMapObjects: mapData.frontMapObjects != undefined
+            ? mapData.frontMapObjects.map( ( mapObject ) => { return initMapObjectModel( mapObject ) } )
+            : [],
 
         spawnPoints: mapData.spawnPoints != undefined 
             ? mapData.spawnPoints.map( ( spawnPoint ) => { return initSpawnPointModel( spawnPoint ) } )

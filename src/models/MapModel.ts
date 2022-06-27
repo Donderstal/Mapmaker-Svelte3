@@ -18,7 +18,10 @@ export type MapModel = {
     frontGrid: TileModel[];
 
     characters: CharacterModel[];
+    frontCharacters: CharacterModel[];
+
     mapObjects: MapObjectModel[];
+    frontMapObjects: MapObjectModel[];
 
     spawnPoints: SpawnPointModel[];
     roads: RoadModel[];

@@ -11,10 +11,12 @@
 	import { FACING_DOWN, FACING_UP, GRID_BLOCK_IN_SHEET_PX, MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE } from "../../resources/constants";
 	import { Grid } from '../../canvas/Grid'
 	import { drawSpriteToTileOnCanvas, drawToFittingCanvas, getImageModelForCharacter, getImageModelForObject, getSpriteFrame } from "../../helpers/canvasHelpers";
-import type { MapObjectModel } from "../../models/MapObjectModel";
-import type { CharacterModel } from "../../models/CharacterModel";
-import type { Tile } from "../../canvas/Tile";
-import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
+	import type { MapObjectModel } from "../../models/MapObjectModel";
+	import type { CharacterModel } from "../../models/CharacterModel";
+	import type { Tile } from "../../canvas/Tile";
+	import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
+	import { orderCanvasObjectsByCellLocation } from "../../helpers/sortHelpers";
+	import type { CanvasObjectModel } from "../../models/CanvasObjectModel";
 
 	export let canvasType : CanvasTypeEnum;
 	export let spriteModel : ImageModel = undefined;
@@ -120,8 +122,9 @@ import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
 		invisible = false;
 	}
 
-	export const drawSpritesToCanvas = ( spriteModelsArray: (CharacterModel|MapObjectModel)[]): void => {
-		spriteModelsArray.forEach((model: CharacterModel|MapObjectModel)=>{
+	export const drawSpritesToCanvas = ( canvasObjects: CanvasObjectModel[]): void => {
+		const sortedSprites = orderCanvasObjectsByCellLocation( canvasObjects );
+		sortedSprites.forEach( (model: CanvasObjectModel): void => {
 			console.log(model);
 			const tile = grid.getTileAtCell(model.column, model.row);
 			if ( model.hasOwnProperty('sprite') ) {

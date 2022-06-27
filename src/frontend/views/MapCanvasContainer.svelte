@@ -36,10 +36,10 @@
 		canvas.setMapModel( activeMap, activeSheet, isBackground );
 		canvas.drawTileBordersToCanvas( );
 		if ( canvas === backSpritesCanvas ) {
-			canvas.drawSpritesToCanvas( [ ...activeMap.mapObjects, ...activeMap.characters ] );
+			canvas.drawSpritesToCanvas( [...activeMap.mapObjects, ...activeMap.characters] );
 		}
 		else {
-			canvas.drawSpritesToCanvas([])
+			canvas.drawSpritesToCanvas( [...activeMap.frontMapObjects, ...activeMap.frontCharacters] )
 		}
 	}
 	
