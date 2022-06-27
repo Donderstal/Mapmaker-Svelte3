@@ -30,6 +30,10 @@
 			tilesheetCanvasLeft.drawTileBordersToCanvas( );
 		}
 	}
+
+	const captureTilesheetClick = ( ) => {
+
+	}
 </script>
 <style>
 	.invisible {
@@ -38,6 +42,6 @@
 	}
 </style>
 <div class:invisible={hide}>
-	<Canvas bind:this={tilesheetCanvasLeft} canvasType={CanvasTypeEnum.tilesheet}/>	
-	<Canvas bind:this={tilesheetCanvasRight} canvasType={CanvasTypeEnum.tilesheet}/>	
+	<Canvas bind:this={tilesheetCanvasLeft} canvasType={CanvasTypeEnum.tilesheet} on:click={captureTilesheetClick}/>	
+	<Canvas bind:this={tilesheetCanvasRight} canvasType={CanvasTypeEnum.tilesheet} on:click={captureTilesheetClick}/>	
 </div>

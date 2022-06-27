@@ -2,6 +2,7 @@ import { Tile } from "./Tile";
 import type { ImageModel } from "../models/ImageModel";
 import type { TileModel } from "../models/TileModel";
 import { GRID_BLOCK_IN_SHEET_PX, SHEET_XY_VALUES, TILE_SIZE } from "../resources/constants";
+import { mirrorOrFlipTile } from "../helpers/canvasHelpers";
 
 export class Grid {
     x: number;
@@ -9,6 +10,7 @@ export class Grid {
     columns: number;
     rows: number;
     tiles: Tile[];
+    canvas: HTMLCanvasElement
 
     constructor( columns: number, rows: number ) {
         this.columns = columns;
@@ -16,6 +18,9 @@ export class Grid {
         this.tiles = [];
 
         this.initTiles();
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = GRID_BLOCK_IN_SHEET_PX;
+        this.canvas.height = GRID_BLOCK_IN_SHEET_PX;
     }
 
     initTiles(): void {
@@ -57,10 +62,12 @@ export class Grid {
     }
 
     drawTile( context: CanvasRenderingContext2D, sheet: ImageModel, tile: Tile ): void {
+        let tileModel: TileModel = tile.tileModel;
         const sheetXy = SHEET_XY_VALUES[tile.tileModel.id];
+        mirrorOrFlipTile( sheet.image, tileModel, this.canvas.getContext("2d"), sheetXy );
         context.drawImage(
-            sheet.image,
-            sheetXy.x, sheetXy.y,
+            this.canvas,
+            0, 0,
             GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX,
             tile.x, tile.y,
             TILE_SIZE, TILE_SIZE

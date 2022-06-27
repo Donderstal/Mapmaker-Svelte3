@@ -115,7 +115,7 @@
 	.container {
 		display: grid;
 		grid-template-columns: [leftMargin] 5vw [leftColumn] 30vw [middleColumn] 30vw [rightColumn] 30vw [rightMargin] 5vw;
-		grid-template-rows: [topMargin] 20vh [topRow] 30vh [bottomRow] 30vh [bottomMargin] 20vh;
+		grid-template-rows: [topMargin] 15vh [topRow] 40vh [bottomRow] 40vh [bottomMargin] 5vh;
 	}
 	.header-item {
 		grid-column: middleColumn / rightColumn;

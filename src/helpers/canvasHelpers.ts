@@ -10,6 +10,7 @@ import type { CharacterSpriteModel } from "../models/CharacterSpriteModel";
 import type { MapObjectSpriteModel } from "../models/MapObjectSpriteModel";
 import { DirectionEnum } from "../enumerables/DirectionEnum";
 import { SpriteSheetAlignmentEnum } from "../enumerables/SpriteSheetAlignmentEnum";
+import type { TileModel } from "../models/TileModel";
 
 export const drawToFittingCanvas = ( imageModel: ImageModel, canvas: HTMLCanvasElement, sX, sY, sWidth, sHeight, dX, dY ) : void => {
     canvas.width = sWidth / SIZE_DIVIDER;
@@ -114,4 +115,53 @@ const getVariableSizeObjectSpriteFrame = ( mapObjectModel: MapObjectSpriteModel,
 
 const getCanvasXyForSprite = ( tile: Tile, frame: SpriteFrameModel ): { x: number, y: number } => {
     return { x: tile.x, y: frame.height > TILE_SIZE ? tile.y - ( (frame.height / SIZE_DIVIDER) - TILE_SIZE ): tile.y };
+}
+
+export const mirrorOrFlipTile = ( sheetImage: HTMLImageElement, tileModel: TileModel, ctx: CanvasRenderingContext2D, tilesheetXy: { x: number, y: number } ): void=> {
+    ctx.clearRect( 0, 0, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX )
+    tileModel.mirrored ? ctx.setTransform( -1, 0, 0, 1, GRID_BLOCK_IN_SHEET_PX, 0 ) : ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+    switch ( tileModel.angle ) {
+        case 0:
+            ctx.drawImage(
+                sheetImage,
+                tilesheetXy.x, tilesheetXy.y, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX,
+                0, 0, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX
+            );
+            break;
+        case 90:
+            ctx.translate( 0 + GRID_BLOCK_IN_SHEET_PX, 0 );
+            ctx.rotate( 90 * ( Math.PI / 180 ) );
+            ctx.drawImage(
+                sheetImage,
+                tilesheetXy.x, tilesheetXy.y, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX,
+                0, 0, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX
+            );
+            ctx.rotate( -( 90 * ( Math.PI / 180 ) ) )
+            ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+            break;
+        case 180:
+            ctx.translate( 0 + GRID_BLOCK_IN_SHEET_PX, 0 + GRID_BLOCK_IN_SHEET_PX );
+            ctx.rotate( Math.PI );
+            ctx.drawImage(
+                sheetImage,
+                tilesheetXy.x, tilesheetXy.y, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX,
+                0, 0, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX
+            );
+            ctx.rotate( -Math.PI )
+            ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+            break;
+        case 270:
+            ctx.translate( 0, 0 + GRID_BLOCK_IN_SHEET_PX );
+            ctx.rotate( 270 * ( Math.PI / 180 ) )
+            ctx.drawImage(
+                sheetImage,
+                tilesheetXy.x, tilesheetXy.y, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX,
+                0, 0, GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX
+            );
+            ctx.rotate( -( 270 * ( Math.PI / 180 ) ) )
+            ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+            break;
+        default:
+            alert( 'Error in flipping tile. Call the police!' )
+    }
 }

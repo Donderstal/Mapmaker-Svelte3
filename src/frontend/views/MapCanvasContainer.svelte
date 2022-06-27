@@ -62,7 +62,7 @@
 	.canvas-container {
 		position: absolute;
 		width: 65vw;
-		height: 65vh;
+		height: 72.5vh;
 	}
 	.back-tiles-container { 
 		z-index: 1;
@@ -79,7 +79,7 @@
 	button {
 		position: fixed;
 		width: 2.5vw;
-		height: 5vh;
+		height: 10vh;
 		left: 2.5vw;
 		float: left;
 		padding: 0;
@@ -96,13 +96,13 @@
 		top: 5vh;
 	}
 	.button-2 {
-		top: 10vh;
-	}
-	.button-3 {
 		top: 15vh;
 	}
+	.button-3 {
+		top: 25vh;
+	}
 	.button-4 {
-		top: 20vh;
+		top: 35vh;
 	}
 	.button-active {
 		width: 5vw;

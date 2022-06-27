@@ -22,7 +22,7 @@
 	export let spriteModel : ImageModel = undefined;
 
 	let grid : Grid;
-	let canvas : HTMLCanvasElement
+	let canvas : HTMLCanvasElement;
 	let context : CanvasRenderingContext2D
 	let model : MapModel
 	let sheet : ImageModel;
@@ -100,7 +100,7 @@
 		grid.drawTileBorders( context );
 	}
 
-	export const drawGridToCanvas = ( ): void => {
+	export const drawGridToCanvas = ( ) : void => {
 		grid.drawTiles( context, sheet );
 	}
 
