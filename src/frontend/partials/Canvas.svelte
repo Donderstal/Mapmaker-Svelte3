@@ -8,21 +8,31 @@
 
 	import { CanvasTypeEnum } from "../../enumerables/CanvasTypeEnum";
 	import { SpriteSheetAlignmentEnum } from "../../enumerables/SpriteSheetAlignmentEnum";
-	import { FACING_DOWN, FACING_UP, GRID_BLOCK_IN_SHEET_PX, MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE } from "../../resources/constants";
+	import { 
+		FACING_DOWN, FACING_UP, GRID_BLOCK_IN_SHEET_PX, 
+		MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE 
+	} from "../../resources/constants";
 	import { Grid } from '../../canvas/Grid'
-	import { drawSpriteToTileOnCanvas, drawToFittingCanvas, getImageModelForCharacter, getImageModelForObject, getSpriteFrame } from "../../helpers/canvasHelpers";
+	import {
+		drawSpriteToTileOnCanvas, drawToFittingCanvas, getImageModelForCharacter, 
+		getImageModelForObject, getSpriteFrame, mirrorOrFlipTile 
+	} from "../../helpers/canvasHelpers";
 	import type { MapObjectModel } from "../../models/MapObjectModel";
 	import type { CharacterModel } from "../../models/CharacterModel";
 	import type { Tile } from "../../canvas/Tile";
 	import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
 	import { orderCanvasObjectsByCellLocation } from "../../helpers/sortHelpers";
 	import type { CanvasObjectModel } from "../../models/CanvasObjectModel";
+import { DirectionEnum } from "../../enumerables/DirectionEnum";
 
 	export let canvasType : CanvasTypeEnum;
 	export let spriteModel : ImageModel = undefined;
+	export let setMapMakerSelection = undefined;
+	export let handleCanvasClick = undefined;
 
 	let grid : Grid;
 	let canvas : HTMLCanvasElement;
+	let invisibleCanvas : HTMLCanvasElement;
 	let context : CanvasRenderingContext2D
 	let model : MapModel
 	let sheet : ImageModel;
@@ -45,33 +55,51 @@
 				setImageToCanvas( spriteModel );
 			}
 		}
+		if ( canvasType == CanvasTypeEnum.utility ) {
+			invisibleCanvas = document.createElement("canvas");
+			invisibleCanvas.width = GRID_BLOCK_IN_SHEET_PX;
+			invisibleCanvas.height = GRID_BLOCK_IN_SHEET_PX;
+		}
 	})
 
-	export const initializeGrid = ( columns: number, rows: number ): void => {
+	export const initializeGrid = ( columns: number, rows: number, startingIndex: number = null ): void => {
 		canvas.width = columns * TILE_SIZE;
 		canvas.height = rows * TILE_SIZE;
-        grid = new Grid( columns, rows );
+        grid = new Grid( columns, rows, startingIndex );
     }
+
+	export const drawTileToFittingCanvas = ( activeSheet: ImageModel, tileModel: TileModel, xy: {x: number, y: number} ): void => {
+		mirrorOrFlipTile( activeSheet.image, tileModel, invisibleCanvas.getContext("2d"), xy );
+		canvas.width = GRID_BLOCK_IN_SHEET_PX;
+		canvas.height = GRID_BLOCK_IN_SHEET_PX;
+		context.drawImage(
+            invisibleCanvas,
+            0, 0,
+            GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX,
+            0, 0,
+            GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX
+        )
+	}
 	
 	export const setImageToCanvas = ( image: ImageModel ) : void => {
 		drawToFittingCanvas( image, canvas, 0, 0, image.image.width, image.image.height, 0, 0);
 	}
 
-	const setCharacterToCanvas = ( image: ImageModel ) : void => {
-		drawToFittingCanvas( image, canvas, 0, 0, MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET, 0, 0);
+	export const setCharacterToCanvas = ( image: ImageModel, direction: DirectionEnum = DirectionEnum.down ) : void => {
+		drawToFittingCanvas( image, canvas, 0, direction * MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET, 0, 0);
 	}
 
-	const setSpriteFrameToCanvas = ( image: ImageModel ) : void => {
+	export const setSpriteFrameToCanvas = ( image: ImageModel ) : void => {
 		const objectSpriteModel : MapObjectSpriteModel = image.dataObject as MapObjectSpriteModel;
 		const widthInSheet = objectSpriteModel.widthBlocks * GRID_BLOCK_IN_SHEET_PX;
 		const heightInSheet = objectSpriteModel.heightBlocks * GRID_BLOCK_IN_SHEET_PX;
 		drawToFittingCanvas( image, canvas, 0, 0, widthInSheet, heightInSheet, 0, 0);
 	}
 
-	const setAlignedSpriteFrameToCanvas = ( image: ImageModel, direction: number = FACING_DOWN ) : void => {
+	export const setAlignedSpriteFrameToCanvas = ( image: ImageModel, direction: DirectionEnum = DirectionEnum.down ) : void => {
 		const objectSpriteModel : MapObjectSpriteModel = image.dataObject as MapObjectSpriteModel;
-		const widthInSheet = ((direction == FACING_DOWN || direction == FACING_UP) ? objectSpriteModel.vertWidthBlocks : objectSpriteModel.horiWidthBlocks) * GRID_BLOCK_IN_SHEET_PX;
-		const heightInSheet = ((direction == FACING_DOWN || direction == FACING_UP) ? objectSpriteModel.vertHeightBlocks : objectSpriteModel.horiHeightBlocks) * GRID_BLOCK_IN_SHEET_PX;
+		const widthInSheet = ((direction == DirectionEnum.down || direction == DirectionEnum.up) ? objectSpriteModel.vertWidthBlocks : objectSpriteModel.horiWidthBlocks) * GRID_BLOCK_IN_SHEET_PX;
+		const heightInSheet = ((direction == DirectionEnum.down || direction == DirectionEnum.up) ? objectSpriteModel.vertHeightBlocks : objectSpriteModel.horiHeightBlocks) * GRID_BLOCK_IN_SHEET_PX;
 		const frames : {x: number, y: number}[] = objectSpriteModel.movementFrames[direction];
 		drawToFittingCanvas( image, canvas, frames[0].x, frames[0].y, widthInSheet, heightInSheet, 0, 0);
 	}
@@ -109,11 +137,19 @@
 		context.fillRect( x, y, width, height );
 	}
 
-	const registerClick = (e) => {
-		console.log("x: " + e.offsetX);
-		console.log("y: " + e.offsetY);
+	const registerClick = (e: MouseEvent) => {
+		if ( canvasType === CanvasTypeEnum.tilesheet ) { 
+			const tile = grid.getTileAtXy(e.offsetX, e.offsetY);
+			handleCanvasClick( tile );
+		}
+		else if ( canvasType === CanvasTypeEnum.spriteCanvas ) {
+			handleCanvasClick( spriteModel.dataObject );
+		}
+		else if ( canvasType !== CanvasTypeEnum.overview && canvasType !== CanvasTypeEnum.utility ) {
+			const tile = grid.getTileAtXy(e.offsetX, e.offsetY);
+			handleCanvasClick( tile );
+		}	
 	}
-
 	export const hideCanvas = ( ) =>{
 		invisible = true;
 	}
@@ -157,6 +193,9 @@
 	}
 	.margin { 
 		margin: 1vh;
+	}
+	canvas {
+		pointer-events: all;
 	}
 </style>
 

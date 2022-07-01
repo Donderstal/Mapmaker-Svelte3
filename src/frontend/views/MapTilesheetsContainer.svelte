@@ -4,8 +4,10 @@
 	import { CanvasTypeEnum } from '../../enumerables/CanvasTypeEnum';
 
 	import Canvas from '../partials/Canvas.svelte';
+	import type { Tile } from '../../canvas/Tile';
 
 	export let hide;
+	export let handleTilesheetClick;
 
 	let tilesheetCanvasLeft  : Canvas;
 	let tilesheetCanvasRight : Canvas;
@@ -17,8 +19,9 @@
 		if ( activeSheet.image.height > window.innerHeight ) {
 			const tilesheetCanvases = [tilesheetCanvasLeft, tilesheetCanvasRight]
 			const gridRows = (activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX) / tilesheetCanvases.length;
+			const tilesInSheetGrid = ( gridRows * 4 );
 			tilesheetCanvases.forEach((e, index)=>{
-				e.initializeGrid( 4, gridRows );
+				e.initializeGrid( 4, gridRows, tilesInSheetGrid * index );
 				e.setTilesetToCanvas( activeSheet, index, tilesheetCanvases.length );
 				e.drawTileBordersToCanvas( );
 			})
@@ -31,8 +34,8 @@
 		}
 	}
 
-	const captureTilesheetClick = ( ) => {
-
+	const handleCanvasClick = ( tile: Tile ) => {
+		handleTilesheetClick( tile )
 	}
 </script>
 <style>
@@ -42,6 +45,6 @@
 	}
 </style>
 <div class:invisible={hide}>
-	<Canvas bind:this={tilesheetCanvasLeft} canvasType={CanvasTypeEnum.tilesheet} on:click={captureTilesheetClick}/>	
-	<Canvas bind:this={tilesheetCanvasRight} canvasType={CanvasTypeEnum.tilesheet} on:click={captureTilesheetClick}/>	
+	<Canvas bind:this={tilesheetCanvasLeft} canvasType={CanvasTypeEnum.tilesheet} handleCanvasClick={handleCanvasClick}/>	
+	<Canvas bind:this={tilesheetCanvasRight} canvasType={CanvasTypeEnum.tilesheet} handleCanvasClick={handleCanvasClick}/>	
 </div>

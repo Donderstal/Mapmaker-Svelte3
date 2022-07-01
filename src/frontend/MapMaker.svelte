@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import type { MapModel } from '../models/MapModel';
 	import { user } from '../stores';
 	import MapCanvasContainer from './views/MapCanvasContainer.svelte';
@@ -8,13 +8,27 @@
 	import MapUiContainer from './views/MapUiContainer.svelte';
 	import SpriteCanvasContainer from './views/SpriteCanvasContainer.svelte';
 	import { CanvasTypeEnum } from '../enumerables/CanvasTypeEnum';
+	import type { Tile } from '../canvas/Tile';
+	import type { TileModel } from '../models/TileModel';
+	import type { CanvasObjectModel } from '../models/CanvasObjectModel';
+	import type { CharacterSpriteModel } from '../models/CharacterSpriteModel';
+	import type { MapObjectSpriteModel } from '../models/MapObjectSpriteModel';
+	import { getCharacterModelFromSpriteModel, getMapObjectModelFromSpriteModel } from '../helpers/modelFactory';
+	import { DirectionEnum } from '../enumerables/DirectionEnum';
+	import type { CharacterModel } from '../models/CharacterModel';
+	import type { MapObjectModel } from '../models/MapObjectModel';
 
 	export let activeMap : MapModel;
 	let activeSheet : ImageModel;
 
-	let mapCanvasContainer;
-	let mapTilesheetsContainer;
-	let mapUiContainer;
+	let selection : TileModel | CanvasObjectModel;
+	let selectionIsTile : boolean;
+	let selectionIsSprite : boolean;
+	let selectionIsTurnable : boolean;
+
+	let mapCanvasContainer : MapCanvasContainer;
+	let mapTilesheetsContainer : MapTilesheetsContainer;
+	let mapUiContainer : MapUiContainer;
 
 	let hideTilesheets = false;
 	let hideSprites = false;
@@ -27,6 +41,11 @@
 		mapCanvasContainer.initializeMapMakerCanvases( activeMap, activeSheet );
 		mapUiContainer.initializeUiColumn( );
 		handleEditModeSwitch( CanvasTypeEnum.frontSprites );
+		document.addEventListener('keydown', handleKeyPress);
+	})
+
+	onDestroy(()=>{
+		document.removeEventListener('keydown', handleKeyPress);
 	})
 
 	const handleEditModeSwitch = ( type : CanvasTypeEnum ) : void => {
@@ -38,6 +57,96 @@
 			hideTilesheets = true;
 			hideSprites = false;
 		}
+	}
+
+	const handleMapCanvasClick = (tile: Tile, type: CanvasTypeEnum): void => {
+
+	}
+
+	const handleTilesheetClick = (tile: Tile): void => {
+		let tileModel : TileModel = tile.tileModel;
+		tileModel.id = tile.index;
+		mapUiContainer.setTileToUtilityCanvas(tileModel, activeSheet);
+		selection = tileModel;
+		selectionIsTile = true;
+		selectionIsSprite = false;
+		selectionIsTurnable = true;
+	}
+
+	const handleSpritesheetClick = (canvasObjectModel: CharacterSpriteModel|MapObjectSpriteModel): void => {
+		selection = (canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className") 
+			? getCharacterModelFromSpriteModel(canvasObjectModel as CharacterSpriteModel) 
+			: getMapObjectModelFromSpriteModel(canvasObjectModel as MapObjectSpriteModel);
+		mapUiContainer.setSpriteToUtilityCanvas(selection);
+		selectionIsTile = false;
+		selectionIsSprite = true;
+		selectionIsTurnable = (canvasObjectModel as MapObjectSpriteModel).isCar || (canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className");
+	}
+
+	const handleKeyPress = (event: KeyboardEvent): void => {
+		if ( !selectionIsTurnable ) {
+			return;
+		}
+		if ( selectionIsTile ) {
+			switch( event.key ) {
+				case "a":
+					turnSelectedTile( DirectionEnum.left );
+					break;
+				case "w":
+					mirrorSelectedTile()
+					break;
+				case "d":
+					turnSelectedTile( DirectionEnum.right );
+					break;
+				case "s":
+					mirrorSelectedTile();
+					break;
+			}
+		}
+		if ( selectionIsSprite ) {
+			switch( event.key ) {
+				case "a":
+					turnSelectedSprite( DirectionEnum.left );
+					break;
+				case "w":
+					turnSelectedSprite( DirectionEnum.up );
+					break;
+				case "d":
+					turnSelectedSprite( DirectionEnum.right );
+					break;
+				case "s":
+					turnSelectedSprite( DirectionEnum.down );
+					break;
+			}
+		}
+	}
+
+	const turnSelectedSprite = (direction: DirectionEnum): void => {
+		const selectedSprite = selection as CanvasObjectModel;
+		if ( selectedSprite.hasOwnProperty("sprite") ) {
+			(selectedSprite as CharacterModel).direction = direction;
+		}
+		else {
+			(selectedSprite as MapObjectModel).direction = direction;
+		}
+		mapUiContainer.setSpriteToUtilityCanvas(selectedSprite);
+	}
+
+	const turnSelectedTile = (direction: DirectionEnum): void => {
+		const selectedTile = selection as TileModel;
+		if ( direction === DirectionEnum.left ) {
+			selectedTile.angle === 0 ? selectedTile.angle = 270 : selectedTile.angle -= 90;
+		}
+		if ( direction === DirectionEnum.right ) {
+			selectedTile.angle === 270 ? selectedTile.angle = 0 : selectedTile.angle += 90;
+		}
+		mapUiContainer.setTileToUtilityCanvas(selectedTile, activeSheet);
+	}
+
+	const mirrorSelectedTile = (): void => {
+		const selectedTile = selection as TileModel;
+		selectedTile.mirrored = !selectedTile.mirrored;
+		mapUiContainer.setTileToUtilityCanvas(selectedTile, activeSheet);
 	}
 </script>
 <style>
@@ -69,13 +178,22 @@
 </style>
 <div class="container">
 	<div class="center-item">
-		<MapCanvasContainer bind:this={mapCanvasContainer} handleEditModeSwitch={handleEditModeSwitch}/>
+		<MapCanvasContainer 
+			bind:this={mapCanvasContainer} 
+			handleEditModeSwitch={handleEditModeSwitch} handleMapCanvasClick={handleMapCanvasClick}
+		/>
 	</div>
 	<div class="bottom-item">
 		<MapUiContainer bind:this={mapUiContainer}/>
 	</div>
 	<div class="right-item">
-		<SpriteCanvasContainer hide={hideSprites}/>
-		<MapTilesheetsContainer bind:this={mapTilesheetsContainer} hide={hideTilesheets}/>
+		<SpriteCanvasContainer 
+			hide={hideSprites}
+			handleSpritesheetClick={handleSpritesheetClick}
+		/>
+		<MapTilesheetsContainer 
+			bind:this={mapTilesheetsContainer} hide={hideTilesheets}
+			handleTilesheetClick={handleTilesheetClick}
+		/>
 	</div>
 </div>

@@ -1,6 +1,7 @@
 import type { TileModel } from "../models/TileModel";
 
 export class Tile {
+    index: number;
     x: number;
     y: number;
     row: number;
@@ -8,7 +9,8 @@ export class Tile {
     tileModel?: TileModel;
     context: CanvasRenderingContext2D;
 
-    constructor( x, y, column, row ) {
+    constructor( index, x, y, column, row ) {
+        this.index = index;
         this.x = x;
         this.y = y;
         this.column = column;

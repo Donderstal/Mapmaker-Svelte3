@@ -10,9 +10,11 @@ export class Grid {
     columns: number;
     rows: number;
     tiles: Tile[];
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement;
+    startingIndex?: number;
 
-    constructor( columns: number, rows: number ) {
+    constructor( columns: number, rows: number, startingIndex: number = null ) {
+        this.startingIndex = startingIndex
         this.columns = columns;
         this.rows = rows;
         this.tiles = [];
@@ -27,6 +29,7 @@ export class Grid {
         for ( var row = 1; row <= this.rows; row++ ) {
             for ( var column = 1; column <= this.columns; column++ ) {
                 this.tiles.push( new Tile(
+                    this.getIndexOfTile( column, row ),
                     ( column - 1 ) * TILE_SIZE,
                     ( row - 1 ) * TILE_SIZE,
                     column, row
@@ -35,9 +38,25 @@ export class Grid {
         }
     }
 
+    getIndexOfTile( column, row ) {
+        let index = ( ( row * this.columns ) - this.columns ) + ( column - 1 );
+        if ( this.startingIndex !== null ) {
+            index += this.startingIndex;
+        }
+        return index
+    }
+
     getTileAtCell( column: number, row: number ): Tile {
         let filteredArray = this.tiles.filter( ( e ) => {
             return e.column === column && e.row === row;
+        } );
+        return filteredArray[0];
+    }
+
+    getTileAtXy( x: number, y: number ): Tile {
+        let filteredArray = this.tiles.filter( ( e ) => {
+            return x >= e.x && x < ( e.x + TILE_SIZE )
+            && y >= e.y && y < ( e.y + TILE_SIZE );
         } );
         return filteredArray[0];
     }

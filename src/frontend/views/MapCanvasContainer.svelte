@@ -5,8 +5,11 @@
 
 	import type { ImageModel } from '../../models/ImageModel';
 	import type { MapModel } from '../../models/MapModel';
+	import type { Tile } from "../../canvas/Tile";
 
 	export let handleEditModeSwitch;
+	export let handleMapCanvasClick;
+	export let getMapMakerSelection = undefined;
 
 	let activeMap : MapModel;
 	let activeSheet : ImageModel;
@@ -57,12 +60,17 @@
 		}
 		handleEditModeSwitch(type);
 	}
+
+	const handleCanvasClick = ( tile: Tile ) => {
+		handleMapCanvasClick( tile, activeCanvas );
+	}
 </script>
 <style>
 	.canvas-container {
 		position: absolute;
 		width: 65vw;
 		height: 72.5vh;
+		pointer-events: none;
 	}
 	.back-tiles-container { 
 		z-index: 1;
@@ -91,6 +99,7 @@
         z-index: 5;
         box-shadow: .5vh .5vh .25vh #64005380;
         transition: transform .3s ease-out;
+		pointer-events: all;
 	}
 	.button-1 { 
 		top: 5vh;
@@ -123,27 +132,39 @@
 			class="{activeCanvas === CanvasTypeEnum.background ? "button-active": "button-inactive"} button-1" 
 			on:click={()=>{activateCanvasEditMode(CanvasTypeEnum.background)}}
 		>Bt</button>
-		<Canvas bind:this={backTilesCanvas} canvasType={CanvasTypeEnum.background}/>
+		<Canvas 
+			bind:this={backTilesCanvas} canvasType={CanvasTypeEnum.background}
+			handleCanvasClick={handleCanvasClick}
+		/>
 	</div>
 	<div class="canvas-container back-sprites-container">
 		<button 
 			class="{activeCanvas === CanvasTypeEnum.backSprites ? "button-active": "button-inactive"} button-2" 
 			on:click={()=>{activateCanvasEditMode(CanvasTypeEnum.backSprites)}}
 		>Bs</button>
-		<Canvas bind:this={backSpritesCanvas} canvasType={CanvasTypeEnum.backSprites}/>
+		<Canvas 
+			bind:this={backSpritesCanvas} canvasType={CanvasTypeEnum.backSprites}
+			handleCanvasClick={handleCanvasClick}
+		/>
 	</div>
 	<div class="canvas-container front-tiles-container">
 		<button 
 			class="{activeCanvas === CanvasTypeEnum.foreground ? "button-active": "button-inactive"} button-3" 
 			on:click={()=>{activateCanvasEditMode(CanvasTypeEnum.foreground)}}
 		>Ft</button>
-		<Canvas bind:this={frontTilesCanvas} canvasType={CanvasTypeEnum.foreground}/>
+		<Canvas 
+			bind:this={frontTilesCanvas} canvasType={CanvasTypeEnum.foreground}
+			handleCanvasClick={handleCanvasClick}
+		/>
 	</div>
 	<div class="canvas-container front-sprites-container">
 		<button 
 			class="{activeCanvas === CanvasTypeEnum.frontSprites ? "button-active": "button-inactive"} button-4"
 			on:click={()=>{activateCanvasEditMode(CanvasTypeEnum.frontSprites)}}
 		>Fs</button>
-		<Canvas bind:this={frontSpritesCanvas} canvasType={CanvasTypeEnum.frontSprites}/>
+		<Canvas 
+			bind:this={frontSpritesCanvas} canvasType={CanvasTypeEnum.frontSprites}
+			handleCanvasClick={handleCanvasClick}
+		/>
 	</div>
 </div>

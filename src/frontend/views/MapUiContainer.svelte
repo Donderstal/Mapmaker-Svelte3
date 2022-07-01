@@ -1,18 +1,44 @@
 <script lang="ts">
 	import { CanvasTypeEnum } from '../../enumerables/CanvasTypeEnum';
 	import Canvas from '../partials/Canvas.svelte';
-	import { TILE_SIZE } from '../../resources/constants';
-	import type { MapModel } from '../../models/MapModel';
+	import { SHEET_XY_VALUES, TILE_SIZE } from '../../resources/constants';
 	import Button from '../partials/Button.svelte';
+	import { getImageModelForCharacter, getImageModelForObject } from '../../helpers/canvasHelpers';
+	import type { MapObjectSpriteModel } from '../../models/MapObjectSpriteModel';
+	import { SpriteSheetAlignmentEnum } from '../../enumerables/SpriteSheetAlignmentEnum';
+	import type { TileModel } from '../../models/TileModel';
+	import type { ImageModel } from '../../models/ImageModel';
+	import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
+	import type { CharacterModel } from '../../models/CharacterModel';
+	import type { MapObjectModel } from '../../models/MapObjectModel';
 
-	let activeMap : MapModel;
 	let utilityCanvas;
 
-	export const initializeUiColumn = ( mapModel : MapModel ) : void => {
-		activeMap = mapModel;
+	export const initializeUiColumn = ( ) : void => {
 		utilityCanvas.initializeGrid( 2, 2 );
-		utilityCanvas.fillRect( 0, 0, TILE_SIZE * 2, TILE_SIZE * 2,"black" )
-;	}
+		utilityCanvas.fillRect( 0, 0, TILE_SIZE * 2, TILE_SIZE * 2,"black" );	
+	}
+	
+	export const setSpriteToUtilityCanvas = ( canvasObjectModel: CanvasObjectModel ): void => {
+		if ( (canvasObjectModel as CharacterModel).hasOwnProperty("sprite") ) {
+			const imageModel = getImageModelForCharacter(canvasObjectModel as CharacterModel);
+			utilityCanvas.setCharacterToCanvas( imageModel, (canvasObjectModel as CharacterModel).direction);
+		}
+		else {
+			const imageModel = getImageModelForObject(canvasObjectModel as MapObjectModel);
+			if ( (imageModel.dataObject as MapObjectSpriteModel).dimensionalAlignment === SpriteSheetAlignmentEnum.standard ) {
+				utilityCanvas.setSpriteFrameToCanvas( imageModel );
+			}
+			else {
+				utilityCanvas.setAlignedSpriteFrameToCanvas( imageModel, (canvasObjectModel as CharacterModel).direction);
+			}
+		}
+	}
+
+	export const setTileToUtilityCanvas = ( tileModel: TileModel, activeSheet: ImageModel ) => {
+		const xy: {x: number, y: number} = SHEET_XY_VALUES[tileModel.id];
+		utilityCanvas.drawTileToFittingCanvas( activeSheet, tileModel, xy );
+	}
 </script>
 <style>
 	.ui-container-grid {

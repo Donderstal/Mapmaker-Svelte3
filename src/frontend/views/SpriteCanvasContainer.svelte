@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { CanvasTypeEnum } from '../../enumerables/CanvasTypeEnum';
 	import { SpriteTypesEnum } from '../../enumerables/SpriteTypesEnum';
+import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
 	import type { ImageModel } from '../../models/ImageModel';
 	import { user } from '../../stores';
 	import Canvas from '../partials/Canvas.svelte'
 
 	export let hide;
+	export let handleSpritesheetClick;
 
 	let spriteFilterSelect : HTMLSelectElement;
 	let selection : SpriteTypesEnum = SpriteTypesEnum.all;
@@ -56,6 +58,10 @@
 	const handleSpriteFilterChange = () => {
 		selection = spriteFilterSelect.selectedIndex as SpriteTypesEnum;
 	}
+
+	const handleCanvasClick = ( canvasObject: CanvasObjectModel ) => {
+		handleSpritesheetClick( canvasObject );
+	}
 </script>
 <style>
 	.invisible {
@@ -82,67 +88,67 @@
 	<!--All-->
 	<div class:invisible={selection !== SpriteTypesEnum.all}>
 		{#each allSprites as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Cars-->
 	<div class:invisible={selection !== SpriteTypesEnum.cars}>
 		{#each cars as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick} />
 		{/each}			
 	</div>
 	<!--Characters-->
 	<div class:invisible={selection !== SpriteTypesEnum.characters}>
 		{#each characters as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Doors & Windows-->
 	<div class:invisible={selection !== SpriteTypesEnum.doorsAndWindows}>
 		{#each doorsAndWindows as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Furniture house-->
 	<div class:invisible={selection !== SpriteTypesEnum.furnitureHouse}>
 		{#each furnitureHouse as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Furniture office-->
 	<div class:invisible={selection !== SpriteTypesEnum.furnitureOffice}>
 		{#each furnitureOffice as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Furniture shop-->
 	<div class:invisible={selection !== SpriteTypesEnum.furnitureShop}>
 		{#each furnitureShop as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Furniture street-->
 	<div class:invisible={selection !== SpriteTypesEnum.furnitureStreet}>
 		{#each furnitureStreet as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Miscellaneous-->
 	<div class:invisible={selection !== SpriteTypesEnum.miscellaneous}>
 		{#each miscellaneous as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Signs & Posters-->
 	<div class:invisible={selection !== SpriteTypesEnum.signsAndPosters}>
 		{#each signsAndPosters as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 	<!--Structures-->
 	<div class:invisible={selection !== SpriteTypesEnum.structures}>
 		{#each structures as sprite}
-			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} />
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>
 </div>
