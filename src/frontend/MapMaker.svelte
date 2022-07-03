@@ -17,6 +17,7 @@
 	import { DirectionEnum } from '../enumerables/DirectionEnum';
 	import type { CharacterModel } from '../models/CharacterModel';
 	import type { MapObjectModel } from '../models/MapObjectModel';
+	import { addSpriteToMapModel, addTileToMapModel, removeSpriteModelFromMap, removeTileModelFromMap } from '../helpers/mapPropertyHelpers';
 
 	export let activeMap : MapModel;
 	let activeSheet : ImageModel;
@@ -48,7 +49,17 @@
 		document.removeEventListener('keydown', handleKeyPress);
 	})
 
+	const setSelection = ( newSelection : TileModel | CanvasObjectModel )=> {
+		selection = newSelection;
+	}
+
 	const handleEditModeSwitch = ( type : CanvasTypeEnum ) : void => {
+		mapUiContainer.initializeUiColumn( );
+		setSelection( null );
+		selectionIsTile = false;
+		selectionIsSprite = false;
+		selectionIsTurnable = false;
+
 		if ( type === CanvasTypeEnum.background || type === CanvasTypeEnum.foreground ) {
 			hideTilesheets = false;
 			hideSprites = true;
@@ -59,25 +70,40 @@
 		}
 	}
 
-	const handleMapCanvasClick = (tile: Tile, type: CanvasTypeEnum): void => {
-
+	const handleMapCanvasClick = (tile: Tile, type: CanvasTypeEnum, shiftKeyIsDown: boolean): void => {
+		if ( (selection === null || selection === undefined ) && !shiftKeyIsDown ) {
+			return;
+		}
+		if ( type === CanvasTypeEnum.background ) {
+			shiftKeyIsDown ? removeTileModelFromMap( tile, activeMap, false ) : addTileToMapModel( selection as TileModel, tile, activeMap, false );
+		}
+		if ( type === CanvasTypeEnum.backSprites ) {
+			shiftKeyIsDown ? removeSpriteModelFromMap( tile, activeMap, false ) : addSpriteToMapModel( selection as CanvasObjectModel, tile, activeMap, false );
+		}
+		if ( type === CanvasTypeEnum.foreground ) {
+			shiftKeyIsDown ? removeTileModelFromMap( tile, activeMap, true ) : addTileToMapModel( selection as TileModel, tile, activeMap, true );
+		}
+		if ( type === CanvasTypeEnum.frontSprites ) {
+			shiftKeyIsDown ? removeSpriteModelFromMap( tile, activeMap, true ) : addSpriteToMapModel( selection as CanvasObjectModel, tile, activeMap, true );
+		}
+		mapCanvasContainer.initializeMapMakerCanvases( activeMap, activeSheet );
 	}
 
 	const handleTilesheetClick = (tile: Tile): void => {
 		let tileModel : TileModel = tile.tileModel;
 		tileModel.id = tile.index;
 		mapUiContainer.setTileToUtilityCanvas(tileModel, activeSheet);
-		selection = tileModel;
+		setSelection(tileModel);
 		selectionIsTile = true;
 		selectionIsSprite = false;
 		selectionIsTurnable = true;
 	}
 
 	const handleSpritesheetClick = (canvasObjectModel: CharacterSpriteModel|MapObjectSpriteModel): void => {
-		selection = (canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className") 
+		setSelection((canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className") 
 			? getCharacterModelFromSpriteModel(canvasObjectModel as CharacterSpriteModel) 
-			: getMapObjectModelFromSpriteModel(canvasObjectModel as MapObjectSpriteModel);
-		mapUiContainer.setSpriteToUtilityCanvas(selection);
+			: getMapObjectModelFromSpriteModel(canvasObjectModel as MapObjectSpriteModel));
+		mapUiContainer.setSpriteToUtilityCanvas(selection as CanvasObjectModel);
 		selectionIsTile = false;
 		selectionIsSprite = true;
 		selectionIsTurnable = (canvasObjectModel as MapObjectSpriteModel).isCar || (canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className");
@@ -184,7 +210,10 @@
 		/>
 	</div>
 	<div class="bottom-item">
-		<MapUiContainer bind:this={mapUiContainer}/>
+		<MapUiContainer 
+			bind:this={mapUiContainer}
+			turnableSelection={selection != null && selectionIsTurnable}
+		/>
 	</div>
 	<div class="right-item">
 		<SpriteCanvasContainer 

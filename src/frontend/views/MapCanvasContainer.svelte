@@ -61,8 +61,8 @@
 		handleEditModeSwitch(type);
 	}
 
-	const handleCanvasClick = ( tile: Tile ) => {
-		handleMapCanvasClick( tile, activeCanvas );
+	const handleCanvasClick = ( tile: Tile, shiftKeyIsDown: boolean ) => {
+		handleMapCanvasClick( tile, activeCanvas, shiftKeyIsDown );
 	}
 </script>
 <style>

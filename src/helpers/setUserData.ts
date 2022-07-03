@@ -13,7 +13,7 @@ import { RoadAlignmentEnum } from '../enumerables/RoadAlignmentEnum';
 import { getTileSheetModels } from '../resources/tilesheetResources';
 import { getClassProfiles } from '../resources/classProfileResources';
 import { getMapObjectSpriteModels } from '../resources/mapObjectResources';
-import { getCharacterImageModelFromSpriteModel, getMapObjectImageModelFromSpriteModel } from './canvasHelpers';
+import { getCharacterImageModelFromSpriteModel, getMapObjectImageModelFromSpriteModel } from './modelConversionHelpers';
 import { DirectionEnum } from '../enumerables/DirectionEnum';
 
 export const setUserData = ( maps: object[], neighbourhoods: object[] ) => {

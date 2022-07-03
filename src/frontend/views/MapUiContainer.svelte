@@ -3,7 +3,7 @@
 	import Canvas from '../partials/Canvas.svelte';
 	import { SHEET_XY_VALUES, TILE_SIZE } from '../../resources/constants';
 	import Button from '../partials/Button.svelte';
-	import { getImageModelForCharacter, getImageModelForObject } from '../../helpers/canvasHelpers';
+	import { getImageModelForCharacter, getImageModelForObject } from '../../helpers/modelConversionHelpers';
 	import type { MapObjectSpriteModel } from '../../models/MapObjectSpriteModel';
 	import { SpriteSheetAlignmentEnum } from '../../enumerables/SpriteSheetAlignmentEnum';
 	import type { TileModel } from '../../models/TileModel';
@@ -13,10 +13,11 @@
 	import type { MapObjectModel } from '../../models/MapObjectModel';
 
 	let utilityCanvas;
+	export let turnableSelection;
 
 	export const initializeUiColumn = ( ) : void => {
 		utilityCanvas.initializeGrid( 2, 2 );
-		utilityCanvas.fillRect( 0, 0, TILE_SIZE * 2, TILE_SIZE * 2,"black" );	
+		utilityCanvas.fillRect( 0, 0, TILE_SIZE * 2, TILE_SIZE * 2, "black" );	
 	}
 	
 	export const setSpriteToUtilityCanvas = ( canvasObjectModel: CanvasObjectModel ): void => {
@@ -26,11 +27,11 @@
 		}
 		else {
 			const imageModel = getImageModelForObject(canvasObjectModel as MapObjectModel);
-			if ( (imageModel.dataObject as MapObjectSpriteModel).dimensionalAlignment === SpriteSheetAlignmentEnum.standard ) {
-				utilityCanvas.setSpriteFrameToCanvas( imageModel );
+			if ( (imageModel.dataObject as MapObjectSpriteModel).dimensionalAlignment === SpriteSheetAlignmentEnum.horiVert ) {
+				utilityCanvas.setAlignedSpriteFrameToCanvas( imageModel, (canvasObjectModel as MapObjectModel).direction);
 			}
 			else {
-				utilityCanvas.setAlignedSpriteFrameToCanvas( imageModel, (canvasObjectModel as CharacterModel).direction);
+				utilityCanvas.setSpriteFrameToCanvas( imageModel );
 			}
 		}
 	}
@@ -80,12 +81,6 @@
 	}
 	input { 
 		max-width: 10vw;
-	}
-	img {
-		max-width: 2.5vw;
-	}
-	.flipped-img { 
-		transform: scaleX(-1);
 	}
 </style>
 <div class="ui-container-grid">
@@ -146,9 +141,10 @@
 			<h4>Selection</h4>
 		</div>
 		<div class="tile-row">
-			<img src="/png-files/ui/curved-arrow.png" alt="turn tile right"/>
-			<Canvas bind:this={utilityCanvas} canvasType={CanvasTypeEnum.utility}/>		
-			<img src="/png-files/ui/curved-arrow.png" alt="turn tile left" class="flipped-img"/>
+			<Canvas bind:this={utilityCanvas} canvasType={CanvasTypeEnum.utility}/>
+			{#if turnableSelection}
+				<p>Turn or mirror your selection with w a s d</p>
+			{/if}
 		</div>
 	</div>
 </div>

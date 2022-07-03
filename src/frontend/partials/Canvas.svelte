@@ -8,26 +8,20 @@
 
 	import { CanvasTypeEnum } from "../../enumerables/CanvasTypeEnum";
 	import { SpriteSheetAlignmentEnum } from "../../enumerables/SpriteSheetAlignmentEnum";
-	import { 
-		FACING_DOWN, FACING_UP, GRID_BLOCK_IN_SHEET_PX, 
-		MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE 
-	} from "../../resources/constants";
+	import { GRID_BLOCK_IN_SHEET_PX,MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE } from "../../resources/constants";
 	import { Grid } from '../../canvas/Grid'
-	import {
-		drawSpriteToTileOnCanvas, drawToFittingCanvas, getImageModelForCharacter, 
-		getImageModelForObject, getSpriteFrame, mirrorOrFlipTile 
-	} from "../../helpers/canvasHelpers";
+	import { drawSpriteToTileOnCanvas, drawToFittingCanvas, mirrorOrFlipTile } from "../../helpers/canvasHelpers";
+	import { getImageModelForCharacter, getImageModelForObject, getSpriteFrame } from "../../helpers/modelConversionHelpers";
 	import type { MapObjectModel } from "../../models/MapObjectModel";
 	import type { CharacterModel } from "../../models/CharacterModel";
 	import type { Tile } from "../../canvas/Tile";
 	import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
 	import { orderCanvasObjectsByCellLocation } from "../../helpers/sortHelpers";
 	import type { CanvasObjectModel } from "../../models/CanvasObjectModel";
-import { DirectionEnum } from "../../enumerables/DirectionEnum";
+	import { DirectionEnum } from "../../enumerables/DirectionEnum";
 
 	export let canvasType : CanvasTypeEnum;
 	export let spriteModel : ImageModel = undefined;
-	export let setMapMakerSelection = undefined;
 	export let handleCanvasClick = undefined;
 
 	let grid : Grid;
@@ -63,6 +57,7 @@ import { DirectionEnum } from "../../enumerables/DirectionEnum";
 	})
 
 	export const initializeGrid = ( columns: number, rows: number, startingIndex: number = null ): void => {
+		context.clearRect(0, 0, canvas.width, canvas.height);
 		canvas.width = columns * TILE_SIZE;
 		canvas.height = rows * TILE_SIZE;
         grid = new Grid( columns, rows, startingIndex );
@@ -147,7 +142,7 @@ import { DirectionEnum } from "../../enumerables/DirectionEnum";
 		}
 		else if ( canvasType !== CanvasTypeEnum.overview && canvasType !== CanvasTypeEnum.utility ) {
 			const tile = grid.getTileAtXy(e.offsetX, e.offsetY);
-			handleCanvasClick( tile );
+			handleCanvasClick( tile, e.shiftKey );
 		}	
 	}
 	export const hideCanvas = ( ) =>{
