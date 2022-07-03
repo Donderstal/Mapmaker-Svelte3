@@ -18,6 +18,9 @@
 	export let saveGame;
 	export let exportGame;
 
+	export let mapName;
+	export let updateMapName;
+
 	export const initializeUiColumn = ( ) : void => {
 		utilityCanvas.initializeGrid( 2, 2 );
 		utilityCanvas.fillRect( 0, 0, TILE_SIZE * 2, TILE_SIZE * 2, "black" );	
@@ -43,6 +46,10 @@
 		const xy: {x: number, y: number} = SHEET_XY_VALUES[tileModel.id];
 		utilityCanvas.drawTileToFittingCanvas( activeSheet, tileModel, xy );
 	}
+
+	const updateMapNameValue = ( ) => {
+		updateMapName( mapName );
+	} 
 </script>
 <style>
 	.ui-container-grid {
@@ -67,16 +74,6 @@
 		grid-column: rightUiColumn;
 		grid-row: uiRow;
 		display: grid;
-		grid-template-columns: [tileColumn] 20vw;
-		grid-template-rows: [headerRow] 5vh [uiRow] 17.5vh;
-	}
-	.header-tile-row {
-		grid-column: tileColumn;
-		grid-row: headerRow;
-	}
-	.tile-row {
-		grid-column: tileColumn;
-		grid-row: uiRow
 	}
 	h4 {
 		margin: 0 auto 1vh auto;
@@ -123,31 +120,14 @@
 		<table>
 			<tr>
 				<td><label for="standard">Map name: </label></td>
-				<td><input name="map-name"/></td>
-			</tr>
-			<tr>
-				<td><label for="neighbourhood-name">Neighbourhood: </label></td>
-				<td><input name="neighbourhood-name"/></td>					
-			</tr>
-			<tr>
-				<td><label for="outdoors">Outdoors: </label></td>
-				<td><input name="outdoors"/></td>			
-			</tr>
-			<tr>
-				<td><label for="coordinate">Coordinate: </label></td>
-				<td><input name="coordinate"/></td>		
+				<td><input name="map-name" bind:value={mapName} on:change={updateMapNameValue}/></td>
 			</tr>
 		</table>
 	</div>
 	<div class="right-ui-item">
-		<div class="header-tile-row">
-			<h4>Selection</h4>
-		</div>
-		<div class="tile-row">
-			<Canvas bind:this={utilityCanvas} canvasType={CanvasTypeEnum.utility}/>
-			{#if turnableSelection}
-				<p>Turn or mirror your selection with w a s d</p>
-			{/if}
-		</div>
+		<Canvas bind:this={utilityCanvas} canvasType={CanvasTypeEnum.utility}/>
+		{#if turnableSelection}
+			<p>Turn or mirror your selection with w a s d</p>
+		{/if}
 	</div>
 </div>

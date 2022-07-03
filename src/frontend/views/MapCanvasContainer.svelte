@@ -102,16 +102,16 @@
 		pointer-events: all;
 	}
 	.button-1 { 
-		top: 5vh;
+		top: 10vh;
 	}
 	.button-2 {
-		top: 15vh;
+		top: 20vh;
 	}
 	.button-3 {
-		top: 25vh;
+		top: 30vh;
 	}
 	.button-4 {
-		top: 35vh;
+		top: 40vh;
 	}
 	.button-active {
 		width: 5vw;

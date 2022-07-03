@@ -7,6 +7,7 @@
     import MainMenu from './MainMenu.svelte';
     import MapMaker from './MapMaker.svelte';
     import MapOverview from './MapOverview.svelte';
+import GoBackButton from './partials/GoBackButton.svelte';
 
     let activeMap;
     let activeNeighbourhood;
@@ -25,6 +26,16 @@
         activeNeighbourhood = $user.neighbourhoods.filter((e)=>{return e.name === menuData})[0];
         inMapOverviewMode.set( true );
     }
+
+    const clearMapMaker = ( ) => {
+        activeMap = null;
+        inMapMakerMode.set( false );
+    }
+
+    const clearMapOverview = ( ) => {
+        activeNeighbourhood = null;
+        inMapOverviewMode.set( false );
+    }
 </script>
 
 <style>
@@ -36,8 +47,10 @@
 <div>
     {#if $loggedIn}
         {#if $inMapMakerMode}
+            <GoBackButton action={clearMapMaker}/>
             <MapMaker activeMap={activeMap}/>
         {:else if $inMapOverviewMode}
+            <GoBackButton action={clearMapOverview}/>
             <MapOverview activeNeighbourhood={activeNeighbourhood}/>
         {:else}
             <MainMenu prepareMapMaker={prepareMapMaker} prepareMapOveriew={prepareMapOverview}/>

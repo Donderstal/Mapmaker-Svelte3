@@ -187,7 +187,8 @@
 		}).then( response => { 
 			return response.json()
 		}).then( json => { 
-			if( json["save-map-success"] ) {
+			let object = JSON.parse(json);
+			if( object["save-map-success"] ) {
 				alert("Map saved!");
 				return;
 			}
@@ -206,6 +207,10 @@
 		aElement.setAttribute('href', uri);
 		aElement.setAttribute('download', activeMap.name + '.json');
 		aElement.click();
+	}
+
+	const updateMapName = ( name: string ): void => {
+		activeMap.name = name;
 	}
 </script>
 <style>
@@ -247,6 +252,7 @@
 			bind:this={mapUiContainer}
 			turnableSelection={selection != null && selectionIsTurnable}
 			saveGame={saveGame} exportGame={exportGame}
+			mapName={activeMap.name} updateMapName={updateMapName}
 		/>
 	</div>
 	<div class="right-item">

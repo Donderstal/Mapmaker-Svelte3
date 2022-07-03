@@ -28,10 +28,10 @@
 
         try {
             file_put_contents( $file_path, $json_map); 
-            echo json_encode('{"save-map-succes": true}', true);            
+            echo json_encode('{"save-map-success": true}', true);            
         }
         catch ( Exception $ex ) {
-            echo json_encode('{"save-map-succes": false}', true );  
+            echo json_encode('{"save-map-success": false}', true );  
             die( $e->getMessage( ) );  
         }
     }

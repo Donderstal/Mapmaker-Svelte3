@@ -20,7 +20,7 @@
         box-shadow: .5vh .5vh .25vh #64005380;
         transition: transform .3s ease-out;
     }
-    button:hover {
+    button:hover, button:focus {
         cursor: pointer;
         transition: transform .3s ease-out;
         transform: translateY(-.5vh) translateX(-.5vh);

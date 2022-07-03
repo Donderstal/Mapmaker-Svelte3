@@ -1,13 +1,11 @@
 <script>
 	import { MainMenuEnum } from "../enumerables/MainMenuEnum";
-	import { CanvasTypeEnum } from "../enumerables/CanvasTypeEnum";
 	import { user } from '../stores.ts'
 
 	import Button from "./partials/Button.svelte";
 	import SelectOverview from "./views/SelectOverview.svelte";
 	import NewMap from "./views/NewMap.svelte";
 	import LoadMap from "./views/LoadMap.svelte";
-	import Canvas from "./partials/Canvas.svelte";
 	import Header from "./partials/Header.svelte";
 
 	import MapCanvasContainer from "./views/MapCanvasContainer.svelte";
