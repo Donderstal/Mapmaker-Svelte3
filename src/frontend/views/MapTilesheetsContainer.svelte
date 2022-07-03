@@ -14,6 +14,7 @@
 	let activeSheet : ImageModel
 
 	export const initializeTilesheetColumn = ( activeSheetModel : ImageModel ) => {
+		[tilesheetCanvasLeft, tilesheetCanvasRight].forEach((e)=>{e.clearGrid()});
 		activeSheet = activeSheetModel;
 
 		if ( activeSheet.image.height > window.innerHeight ) {

@@ -187,7 +187,7 @@
 		}).then( response => { 
 			return response.json()
 		}).then( json => { 
-			if( json["save-map-succes"] ) {
+			if( json["save-map-success"] ) {
 				alert("Map saved!");
 				return;
 			}

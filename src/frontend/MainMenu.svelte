@@ -10,6 +10,9 @@
 	import Canvas from "./partials/Canvas.svelte";
 	import Header from "./partials/Header.svelte";
 
+	import MapCanvasContainer from "./views/MapCanvasContainer.svelte";
+	import MapTilesheetsContainer from "./views/MapTilesheetsContainer.svelte";
+
 	export let prepareMapMaker;
 	export let prepareMapOveriew;
 
@@ -17,7 +20,8 @@
 	let activeFormType = false;
 	let showPreviewCanvas = false;
 
-	let previewCanvas;
+	let previewTilesheet;
+	let previewMap;
 	let activePreviewName;
 
 	let newMapMenu;
@@ -95,9 +99,7 @@
 		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
 
 		setTimeout(()=>{
-			previewCanvas.setMapModel( map, sheet, true );
-			previewCanvas.drawTileBordersToCanvas( );
-			previewCanvas.drawGridToCanvas( );		
+			previewMap.initializeMapMakerCanvases( map, sheet );		
 		}, 10)
 	}
 
@@ -107,7 +109,7 @@
 
 		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === event.target.value})[0];
 		setTimeout(()=>{
-			previewCanvas.setImageToCanvas( sheet );
+			previewTilesheet.initializeTilesheetColumn( sheet );
 		}, 10)
 	}
 </script>
@@ -143,10 +145,26 @@
 		position: fixed;
 		margin: 1vw;
 		background: rgba(0, 56, 77, 0.5);
+		z-index: 20;
 	}
 	span:hover {
 		color:#D82BBA;
 		cursor: pointer;
+	}
+	.invisible {
+		display: none;
+		visibility: hidden;
+	}
+	.sheetContainer {
+		height: 65vh;
+		overflow: scroll;
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+		z-index: 5;
+		padding: 0vh 1vh;
+	}
+	.sheetContainer::-webkit-scrollbar {
+		display: none;
 	}
 </style>
 <div class="container">
@@ -157,7 +175,12 @@
 		<div class="top-item canvas-preview-div">
 			<h3>{activePreviewName}</h3>
 			<span on:click|preventDefault={hidePreviewCanvas}>&#10006</span>
-			<Canvas bind:this={previewCanvas} canvasType={CanvasTypeEnum.overview}/>	
+			<div class:invisible={activeFormType !== MainMenuEnum.newMap} class="sheetContainer">
+				<MapTilesheetsContainer bind:this={previewTilesheet} hide={false} handleTilesheetClick={()=>{}}/>
+			</div>
+			<div class:invisible={activeFormType !== MainMenuEnum.loadMap}>
+				<MapCanvasContainer bind:this={previewMap} handleEditModeSwitch={()=>{}} handleMapCanvasClick={()=>{}}/>
+			</div>
 		</div>
 	{:else}
 		<div class="top-item">

@@ -63,6 +63,13 @@
         grid = new Grid( columns, rows, startingIndex );
     }
 
+	export const clearGrid = ( ): void => {
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		canvas.width = 0;
+		canvas.height = 0;
+        grid = null;
+	}
+
 	export const drawTileToFittingCanvas = ( activeSheet: ImageModel, tileModel: TileModel, xy: {x: number, y: number} ): void => {
 		mirrorOrFlipTile( activeSheet.image, tileModel, invisibleCanvas.getContext("2d"), xy );
 		canvas.width = GRID_BLOCK_IN_SHEET_PX;
