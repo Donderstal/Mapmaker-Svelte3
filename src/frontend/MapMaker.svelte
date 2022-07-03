@@ -18,6 +18,7 @@
 	import type { CharacterModel } from '../models/CharacterModel';
 	import type { MapObjectModel } from '../models/MapObjectModel';
 	import { addSpriteToMapModel, addTileToMapModel, removeSpriteModelFromMap, removeTileModelFromMap } from '../helpers/mapPropertyHelpers';
+	import { getJsonFromMapModel } from '../helpers/exportHelpers';
 
 	export let activeMap : MapModel;
 	let activeSheet : ImageModel;
@@ -174,6 +175,38 @@
 		selectedTile.mirrored = !selectedTile.mirrored;
 		mapUiContainer.setTileToUtilityCanvas(selectedTile, activeSheet);
 	}
+
+	const saveGame = (): void => {
+		let form = new FormData();
+		form.append("map_name", activeMap.name);
+		form.append("map_json", JSON.stringify(getJsonFromMapModel(activeMap)));
+		form.append("form_type", "POST_MAP")
+		fetch( "catch_http_request.php", {
+			method: "POST",
+			body: form
+		}).then( response => { 
+			return response.json()
+		}).then( json => { 
+			if( json["save-map-succes"] ) {
+				alert("Map saved!");
+				return;
+			}
+			console.log(getJsonFromMapModel(activeMap))
+			alert("Error saving map!");
+		}).catch(err => {
+			console.trace( );
+			console.log("Error Reading data " + err);
+			alert("Error saving map!");
+		} );
+	}
+
+	const exportGame = (): void => {
+		let uri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify(getJsonFromMapModel(activeMap)));
+		let aElement = document.createElement('a');
+		aElement.setAttribute('href', uri);
+		aElement.setAttribute('download', activeMap.name + '.json');
+		aElement.click();
+	}
 </script>
 <style>
 	.container {
@@ -213,6 +246,7 @@
 		<MapUiContainer 
 			bind:this={mapUiContainer}
 			turnableSelection={selection != null && selectionIsTurnable}
+			saveGame={saveGame} exportGame={exportGame}
 		/>
 	</div>
 	<div class="right-item">

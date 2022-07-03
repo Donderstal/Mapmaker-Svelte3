@@ -356,9 +356,10 @@ export const spriteData = {
     },
     "couch_nice_north" : {
         "src": "couch_nice_north.png",
+        "dimensional_alignment": "STANDARD",
         "grounded_at_bottom": true,
-        "height_blocks": 2.28125,
-        "width_blocks": 1.34375
+        "width_blocks": 2.28125,
+        "height_blocks": 1.34375
     },
     "couch_nice_right" : {
         "src": "couch_nice_right.png",
@@ -366,9 +367,10 @@ export const spriteData = {
     },
     "couch_nice_south" : {
         "src": "couch_nice_south.png",
+        "dimensional_alignment": "STANDARD",
         "grounded_at_bottom": true,
-        "height_blocks": 2.28125,
-        "width_blocks": 1.59375
+        "width_blocks": 2.28125,
+        "height_blocks": 1.59375
     },
     "couch_yello" : {
         "src": "couch_yello.png",

@@ -66,32 +66,32 @@ export const initMapModel = ( mapData ): MapModel => {
         outdoors: mapData.outdoors,
         music: mapData.music,
 
-        grid: mapData.grid.map( ( tile ) => { return initTileModel( tile ) } ),
+        grid: mapData.grid.map( ( tile ): TileModel => { return initTileModel( tile ) } ),
         frontGrid: mapData.frontGrid != undefined
-            ? mapData.frontGrid.map( ( tile ) => { return initTileModel( tile ) } )
-            : mapData.grid.map( ( tile ) => { return initTileModel( "E" ) } ),
+            ? mapData.frontGrid.map( ( tile ): TileModel => { return initTileModel( tile ) } )
+            : mapData.grid.map( ( ): TileModel => { return initTileModel( "E" ) } ),
 
         characters: mapData.characters != undefined 
-            ? mapData.characters.map( ( character ) => { return initCharacterModel( character ) } )
+            ? mapData.characters.map( ( character ): CharacterModel => { return initCharacterModel( character ) } )
             : [],
         mapObjects: mapData.mapObjects != undefined 
-            ? mapData.mapObjects.map( ( mapObject ) => { return initMapObjectModel( mapObject ) } )
+            ? mapData.mapObjects.map( ( mapObject ): MapObjectModel => { return initMapObjectModel( mapObject ) } )
             : [],
         frontCharacters: mapData.frontCharacters != undefined
-            ? mapData.frontCharacters.map( ( character ) => { return initCharacterModel( character ) } )
+            ? mapData.frontCharacters.map( ( character ): CharacterModel => { return initCharacterModel( character ) } )
             : [],
         frontMapObjects: mapData.frontMapObjects != undefined
-            ? mapData.frontMapObjects.map( ( mapObject ) => { return initMapObjectModel( mapObject ) } )
+            ? mapData.frontMapObjects.map( ( mapObject ): MapObjectModel => { return initMapObjectModel( mapObject ) } )
             : [],
 
         spawnPoints: mapData.spawnPoints != undefined 
-            ? mapData.spawnPoints.map( ( spawnPoint ) => { return initSpawnPointModel( spawnPoint ) } )
+            ? mapData.spawnPoints.map( ( spawnPoint ): SpawnPointModel => { return initSpawnPointModel( spawnPoint ) } )
             : [],
         roads: mapData.roads != undefined
-            ? mapData.roads.map( ( road ) => { return initRoadModel( road ) } )
+            ? mapData.roads.map( ( road ): RoadModel => { return initRoadModel( road ) } )
             : [],
         doors: mapData.doors != undefined
-            ? mapData.doors.map( ( door ) => { return initDoorModel( door ) } )
+            ? mapData.doors.map( ( door ): DoorModel => { return initDoorModel( door ) } )
             : []
     };
     return mapModel;

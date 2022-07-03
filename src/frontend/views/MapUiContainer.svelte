@@ -13,7 +13,10 @@
 	import type { MapObjectModel } from '../../models/MapObjectModel';
 
 	let utilityCanvas;
+
 	export let turnableSelection;
+	export let saveGame;
+	export let exportGame;
 
 	export const initializeUiColumn = ( ) : void => {
 		utilityCanvas.initializeGrid( 2, 2 );
@@ -111,10 +114,10 @@
 	</div>
 	<div class="center-left-ui-item">
 		<br/>
-		<Button buttonText={"Save map"} action={()=>{console.log("Save map")}}/>
+		<Button buttonText={"Save map"} action={saveGame}/>
 		<br/>
 		<br/>			
-		<Button buttonText={"Export map"} action={()=>{console.log("Export map")}}/>
+		<Button buttonText={"Export map"} action={exportGame}/>
 	</div>
 	<div class="center-right-ui-item">
 		<table>
