@@ -6,7 +6,7 @@
 
     function GetDAAL( ) {
         $DATABASE = new PDO( "mysql:host=localhost", "root", "" );
-        $DATABASE->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $DATABASE->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
         
         $database_name = "`".str_replace( "`", "``", "maptool_database" )."`";
 
@@ -83,12 +83,7 @@
             echo json_encode('{"success": false, "error-message": "This username does not exist. Please register first"}', true);
             return;
         }
-
-        if (  $USER_DATA['validated'] == 0 ) {
-            echo json_encode('{"success": false, "error-message": "Your account has not been validated"}', true);
-            return;
-        }
-        else if ( password_verify( $password, $USER_DATA['password'] ) ) {
+        if ( password_verify( $password, $USER_DATA['password'] ) ) {
             $_SESSION['username'] = $username;
             echo json_encode('{"success": true}', true);
             return;

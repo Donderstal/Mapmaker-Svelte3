@@ -10,6 +10,8 @@
 	export let handleEditModeSwitch;
 	export let handleMapCanvasClick;
 	export let getMapMakerSelection = undefined;
+	export let registerMouseClickStartInMap = undefined;
+	export let registerMouseClickEndInMap = undefined;
 
 	let activeMap : MapModel;
 	let activeSheet : ImageModel;
@@ -27,6 +29,21 @@
 		initSpriteCanvas( backSpritesCanvas, true );
 		initTileCanvas( frontTilesCanvas, false );
 		initSpriteCanvas( frontSpritesCanvas, false );
+	}
+
+	export const getTileAtCell = ( column: number, row: number, type: CanvasTypeEnum ): Tile => {
+		if ( type === CanvasTypeEnum.background ) {
+			return backTilesCanvas.getTileAtCell( column, row );
+		}
+		if ( type === CanvasTypeEnum.backSprites ) {
+			return backSpritesCanvas.getTileAtCell( column, row );
+		}
+		if ( type === CanvasTypeEnum.foreground ) {
+			return frontTilesCanvas.getTileAtCell( column, row );
+		}
+		if (  type === CanvasTypeEnum.frontSprites ) {
+			return frontSpritesCanvas.getTileAtCell( column, row );
+		}
 	}
 
 	const initTileCanvas = ( canvas : Canvas, isBackground: boolean ) : void => {
@@ -63,6 +80,14 @@
 
 	const handleCanvasClick = ( tile: Tile, shiftKeyIsDown: boolean ) => {
 		handleMapCanvasClick( tile, activeCanvas, shiftKeyIsDown );
+	}
+
+	const registerMouseClickStart = ( tile: Tile ) => {
+		registerMouseClickStartInMap( tile )
+	}
+	
+	const registerMouseClickEnd = ( tile: Tile, type: CanvasTypeEnum, shiftKeyIsDown: boolean ) => {
+		registerMouseClickEndInMap( tile, type, shiftKeyIsDown )
 	}
 </script>
 <style>
@@ -134,7 +159,7 @@
 		>Bt</button>
 		<Canvas 
 			bind:this={backTilesCanvas} canvasType={CanvasTypeEnum.background}
-			handleCanvasClick={handleCanvasClick}
+			handleCanvasClick={handleCanvasClick} registerMouseClickEnd={registerMouseClickEnd} registerMouseClickStart={registerMouseClickStart}
 		/>
 	</div>
 	<div class="canvas-container back-sprites-container">
@@ -154,7 +179,7 @@
 		>Ft</button>
 		<Canvas 
 			bind:this={frontTilesCanvas} canvasType={CanvasTypeEnum.foreground}
-			handleCanvasClick={handleCanvasClick}
+			handleCanvasClick={handleCanvasClick} registerMouseClickEnd={registerMouseClickEnd} registerMouseClickStart={registerMouseClickStart}
 		/>
 	</div>
 	<div class="canvas-container front-sprites-container">

@@ -19,10 +19,15 @@
 	import { orderCanvasObjectsByCellLocation } from "../../helpers/sortHelpers";
 	import type { CanvasObjectModel } from "../../models/CanvasObjectModel";
 	import { DirectionEnum } from "../../enumerables/DirectionEnum";
+	import { user } from "../../stores";
 
 	export let canvasType : CanvasTypeEnum;
 	export let spriteModel : ImageModel = undefined;
 	export let handleCanvasClick = undefined;
+	export let registerMouseClickStart = undefined;
+	export let registerMouseClickEnd = undefined;
+	export let map : MapModel = undefined;
+	export let slot : {column: number, row: number} = undefined;
 
 	let grid : Grid;
 	let canvas : HTMLCanvasElement;
@@ -54,7 +59,51 @@
 			invisibleCanvas.width = GRID_BLOCK_IN_SHEET_PX;
 			invisibleCanvas.height = GRID_BLOCK_IN_SHEET_PX;
 		}
+		if ( canvasType === CanvasTypeEnum.overview ) {
+			if ( map === null ) {
+				initializeGrid( 24, 16 );
+				return;
+			}
+			model = map;
+			sheet = Object.values($user.tilesets).filter((e)=>{return e.dataObject.key === model.tileSet})[0];
+			setSlot(slot);
+			initializeGrid( model.columns, model.rows );
+			setTileModelsToGridTiles( model.grid );
+			grid.drawTiles(context, sheet);
+
+			drawSpritesToCanvas( [ ...model.characters, ...model.mapObjects ] );
+
+			let frontGrid = new Grid( model.columns, model.rows );
+			frontGrid.setTileModelsToTiles( model.frontGrid );
+			frontGrid.drawTiles(context, sheet);
+
+			drawSpritesToCanvas( [ ...model.frontCharacters, ...model.frontMapObjects ] );
+			drawBorders();
+		}
 	})
+
+	const setSlot = (slot) => {
+		canvas.style.gridRow = slot.row;
+        canvas.style.gridColumn = slot.column;
+	} 
+
+	const drawBorders = ()=> {
+		context.beginPath();
+        context.lineWidth = .5
+        context.strokeStyle = 'black'
+        context.moveTo( 0, 0 );
+        context.lineTo( canvas.width, 0 );
+        context.moveTo( canvas.width, 0 );
+        context.lineTo( canvas.width, canvas.height );
+        context.moveTo( canvas.width, canvas.height );
+        context.lineTo( 0, canvas.height );
+        context.moveTo( 0, canvas.height );
+        context.lineTo( 0, 0 );
+        context.stroke();
+		context.fillStyle = 'white';
+		context.font = 'bold 48px serif';
+		context.fillText( model.name, canvas.width -  context.measureText(model.name).width, TILE_SIZE )
+	}
 
 	export const initializeGrid = ( columns: number, rows: number, startingIndex: number = null ): void => {
 		context.clearRect(0, 0, canvas.width, canvas.height);
@@ -81,6 +130,10 @@
             0, 0,
             GRID_BLOCK_IN_SHEET_PX, GRID_BLOCK_IN_SHEET_PX
         )
+	}
+
+	export const getTileAtCell = ( column: number, row: number ): Tile => {
+		return grid.getTileAtCell( column, row );
 	}
 	
 	export const setImageToCanvas = ( image: ImageModel ) : void => {
@@ -122,10 +175,6 @@
         grid.setTileModelsToTiles( tileModelList );
     }
 
-    const setTileModelToGridTile = ( tileModel: TileModel, index: number ): void => {
-        grid.setTileModelToTile( tileModel, index );
-    }
-
 	export const drawTileBordersToCanvas = ( ): void => {
 		grid.drawTileBorders( context );
 	}
@@ -152,6 +201,18 @@
 			handleCanvasClick( tile, e.shiftKey );
 		}	
 	}
+	const mouseDown = (e: MouseEvent) => {
+		if ( canvasType == CanvasTypeEnum.background || canvasType === CanvasTypeEnum.foreground ) {
+			const tile = grid.getTileAtXy(e.offsetX, e.offsetY);
+			registerMouseClickStart( tile );
+		}
+	}
+	const mouseUp = (e: MouseEvent) => {
+		if ( canvasType == CanvasTypeEnum.background || canvasType === CanvasTypeEnum.foreground ) {
+			const tile = grid.getTileAtXy(e.offsetX, e.offsetY);
+			registerMouseClickEnd( tile, canvasType, e.shiftKey );
+		}
+	}
 	export const hideCanvas = ( ) =>{
 		invisible = true;
 	}
@@ -161,6 +222,7 @@
 	}
 
 	export const drawSpritesToCanvas = ( canvasObjects: CanvasObjectModel[]): void => {
+		console.log(model);
 		const sortedSprites = orderCanvasObjectsByCellLocation( canvasObjects );
 		sortedSprites.forEach( (model: CanvasObjectModel): void => {
 			console.log(model);
@@ -204,6 +266,8 @@
 <canvas 
 	bind:this={canvas}
 	on:click={registerClick}
+	on:mousedown={mouseDown}
+	on:mouseup={mouseUp}
 	class:invisible={invisible}
 	class:margin={canvasType === CanvasTypeEnum.spriteCanvas}
 />

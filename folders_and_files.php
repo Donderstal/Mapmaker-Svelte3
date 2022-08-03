@@ -4,14 +4,23 @@
         $userdir = 'user-folders/' . str_replace( " ", "_", $username );
         mkdir( $userdir );
         mkdir( $userdir . '/neighbourhoods');
+        $master_neighbourhoods = 'master-folder/neighbourhoods';
         $user_neighbourhoods = $userdir . '/neighbourhoods';
+
         mkdir( $userdir . '/maps');
+        $master_maps = 'master-folder/maps';
+        $user_maps = $userdir . '/maps';
 
         try {
-            $master_folder = 'master-folder';
-            $master_files = glob("master-folder/*.*");
-            foreach($master_files as $path_to_old_file){
-                $path_to_new_file = str_replace( $master_folder, $user_neighbourhoods, $path_to_old_file );
+            $master_neighbourhood_files = glob("master-folder/neighbourhoods/*.*");
+            foreach($master_neighbourhood_files as $path_to_old_file){
+                $path_to_new_file = str_replace( $master_neighbourhoods, $user_neighbourhoods, $path_to_old_file );
+                copy( $path_to_old_file, $path_to_new_file );
+            }
+
+            $master_map_files = glob("master-folder/maps/*.*");
+            foreach($master_map_files as $path_to_old_file){
+                $path_to_new_file = str_replace( $master_maps, $user_maps, $path_to_old_file );
                 copy( $path_to_old_file, $path_to_new_file );
             }
             

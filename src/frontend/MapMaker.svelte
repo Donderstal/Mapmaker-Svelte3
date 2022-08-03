@@ -34,6 +34,9 @@
 
 	let hideTilesheets = false;
 	let hideSprites = false;
+	
+	let clickStartColumn;
+	let clickStartRow;
 
 	onMount(()=>{
 		let tileSheets : ImageModel[] = Object.values($user.tilesets);
@@ -69,6 +72,42 @@
 			hideTilesheets = true;
 			hideSprites = false;
 		}
+	}
+
+	const registerMouseClickStartInMap = ( tile: Tile ): void => {
+		clickStartColumn = tile.column;
+		clickStartRow = tile.row;
+	}
+
+	const registerMouseClickEndInMap = ( tile: Tile, type: CanvasTypeEnum, shiftKeyIsDown: boolean ): void => {
+		const clickEndColumn = tile.column;
+		const clickEndRow = tile.row;
+
+		const clickRangeSquare = {
+			left: clickStartColumn > clickEndColumn ? clickEndColumn : clickStartColumn,
+			top: clickStartRow > clickEndRow ? clickEndRow : clickStartRow,
+			right: clickStartColumn < clickEndColumn ? clickEndColumn : clickStartColumn,
+			bottom: clickStartRow < clickEndRow ? clickEndRow : clickStartRow
+		}
+
+		const tilesInRange = [];
+		if ( selectionIsTile ) {
+			let column = clickRangeSquare.left;
+			while( column <= clickRangeSquare.right ) {
+				let row = clickRangeSquare.top;
+				while( row <= clickRangeSquare.bottom ) {
+					const tile = mapCanvasContainer.getTileAtCell( column, row, type );
+					tilesInRange.push(tile);
+					row++;
+				}
+				column++;
+			}
+		}
+		tilesInRange.forEach((e)=>{
+			shiftKeyIsDown 
+				? removeTileModelFromMap( e, activeMap, type === CanvasTypeEnum.foreground ) 
+				: addTileToMapModel( selection as TileModel, e, activeMap, type === CanvasTypeEnum.foreground );
+		})
 	}
 
 	const handleMapCanvasClick = (tile: Tile, type: CanvasTypeEnum, shiftKeyIsDown: boolean): void => {
@@ -245,6 +284,7 @@
 		<MapCanvasContainer 
 			bind:this={mapCanvasContainer} 
 			handleEditModeSwitch={handleEditModeSwitch} handleMapCanvasClick={handleMapCanvasClick}
+			registerMouseClickStartInMap={registerMouseClickStartInMap} registerMouseClickEndInMap={registerMouseClickEndInMap}
 		/>
 	</div>
 	<div class="bottom-item">
