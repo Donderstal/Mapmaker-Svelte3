@@ -217,7 +217,7 @@
 
 	const saveGame = (): void => {
 		let form = new FormData();
-		form.append("map_name", activeMap.name);
+		form.append("map_name", activeMap.key);
 		form.append("map_json", JSON.stringify(getJsonFromMapModel(activeMap)));
 		form.append("form_type", "POST_MAP")
 		fetch( "catch_http_request.php", {
@@ -244,12 +244,16 @@
 		let uri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify(getJsonFromMapModel(activeMap)));
 		let aElement = document.createElement('a');
 		aElement.setAttribute('href', uri);
-		aElement.setAttribute('download', activeMap.name + '.json');
+		aElement.setAttribute('download', activeMap.key + '.json');
 		aElement.click();
 	}
 
 	const updateMapName = ( name: string ): void => {
-		activeMap.name = name;
+		activeMap.key = name;
+	}
+
+	const updateMapLocation = ( location: string ): void => {
+		activeMap.location = location;
 	}
 </script>
 <style>
@@ -292,7 +296,8 @@
 			bind:this={mapUiContainer}
 			turnableSelection={selection != null && selectionIsTurnable}
 			saveGame={saveGame} exportGame={exportGame}
-			mapName={activeMap.name} updateMapName={updateMapName}
+			mapKey={activeMap.key} updateMapName={updateMapName}
+			mapLocation={activeMap.location} updateMapLocation={updateMapLocation}
 		/>
 	</div>
 	<div class="right-item">

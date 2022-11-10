@@ -58,9 +58,10 @@ const initTilesheets = ( ): ImageModel[] => {
 
 export const initMapModel = ( mapData ): MapModel => {
     const mapModel: MapModel = {
-        name: mapData.name == undefined ? mapData.mapName : mapData.name,
+        key: mapData.key != undefined ? mapData.key : mapData.name == undefined ? mapData.mapName : mapData.name,
         columns: mapData.columns == undefined ? mapData.cols : mapData.columns,
         rows: mapData.rows,
+        location: mapData.location != undefined ? mapData.location : "",
 
         tileSet: mapData.tileSet,
         outdoors: mapData.outdoors,
@@ -103,7 +104,7 @@ export const initNeighbourhoodModel = ( neighbourhoodData, availableMaps ): Neig
 
     mapKeys.forEach( ( key ) => {
         mapDictionary[key]  = availableMaps.filter( ( e ) => {
-            return e.name.includes( neighbourhoodData.mapDictionary[key] )
+            return e.key.includes( neighbourhoodData.mapDictionary[key] )
         } )[0]
     } )
 

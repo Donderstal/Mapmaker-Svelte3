@@ -3,6 +3,7 @@ export enum SpriteTypesEnum {
     cars,
     characters,
     doorsAndWindows,
+    furnitureBar,
     furnitureHouse,
     furnitureOffice,
     furnitureShop,

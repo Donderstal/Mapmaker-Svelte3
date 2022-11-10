@@ -93,7 +93,7 @@
 		showPreviewCanvas = true;
 		activePreviewName = event.target.value;
 
-		const map = $user.maps.filter((e)=>{return e.name === event.target.value})[0];
+		const map = $user.maps.filter((e)=>{return e.key === event.target.value})[0];
 		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
 
 		setTimeout(()=>{

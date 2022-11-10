@@ -18,8 +18,11 @@
 	export let saveGame;
 	export let exportGame;
 
-	export let mapName;
+	export let mapKey;
 	export let updateMapName;
+
+	export let mapLocation;
+	export let updateMapLocation;
 
 	export const initializeUiColumn = ( ) : void => {
 		utilityCanvas.initializeGrid( 2, 2 );
@@ -48,7 +51,11 @@
 	}
 
 	const updateMapNameValue = ( ) => {
-		updateMapName( mapName );
+		updateMapName( mapKey );
+	} 
+
+	const updateMapLocationValue = ( ) => {
+		updateMapLocation( mapLocation );
 	} 
 </script>
 <style>
@@ -119,8 +126,12 @@
 	<div class="center-right-ui-item">
 		<table>
 			<tr>
-				<td><label for="standard">Map name: </label></td>
-				<td><input name="map-name" bind:value={mapName} on:change={updateMapNameValue}/></td>
+				<td><label for="standard">Map key: </label></td>
+				<td><input name="map-name" bind:value={mapKey} on:change={updateMapNameValue}/></td>
+			</tr>
+						<tr>
+				<td><label for="standard">Location: </label></td>
+				<td><input name="map-name" bind:value={mapLocation} on:change={updateMapLocationValue}/></td>
 			</tr>
 		</table>
 	</div>

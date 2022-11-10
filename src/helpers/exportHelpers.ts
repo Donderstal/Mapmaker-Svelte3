@@ -8,7 +8,8 @@ import type { TileModel } from "../models/TileModel";
 
 export const getJsonFromMapModel = ( model: MapModel ): object => {
     return {
-        "name": model.name,
+        "key": model.key,
+        "location": model.location,
         "columns": model.columns,
         "rows": model.rows,
         "tileSet": model.tileSet,

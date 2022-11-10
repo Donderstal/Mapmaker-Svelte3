@@ -16,23 +16,31 @@ import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
 	let characters : ImageModel[] = [...$user.characterPngs]
 	let allSprites : ImageModel[] = [...assets, ...characters];
 	let cars : ImageModel[] = assets.filter((e)=>{return e.dataObject.src.includes("car") || e.dataObject.src.includes("bus.png")});
-	let doorsAndWindows : ImageModel[] = assets.filter((e)=>{return e.dataObject.src.includes("Door") || e.dataObject.src.includes("Window") || e.dataObject.src.includes("window")});
+	let doorsAndWindows : ImageModel[] = assets.filter((e)=>{return e.dataObject.src.includes("Door") || e.dataObject.src.includes("Window") || e.dataObject.src.includes("window") || e.dataObject.src.includes("Stairs")  });
+	let furnitureBar : ImageModel[] = assets.filter((e)=>{
+		return e.dataObject.src.includes("Bar") || e.dataObject.src.includes("bottle") || e.dataObject.src.includes("Jukebox") || e.dataObject.src.includes("glass") 
+		|| e.dataObject.src.includes("chair_red") || e.dataObject.src.includes("brown_chair") || e.dataObject.src.includes("magazine_rack_b") || e.dataObject.src.includes("Can_Z")
+		|| e.dataObject.src.includes("crisps") || e.dataObject.src.includes("rug01") || ( e.dataObject.src.includes("table") && !e.dataObject.src.includes("_") ) 
+		|| e.dataObject.src.includes("toilet") || e.dataObject.src.includes("urinal");
+	});
 	let furnitureHouse : ImageModel[] = assets.filter((e)=>{
 		return e.dataObject.src.includes("_bed") || e.dataObject.src.includes("_chair_red") || e.dataObject.src.includes("brown_chair") || e.dataObject.src.includes("couch") 
 		|| e.dataObject.src.includes("Fridge") || e.dataObject.src.includes("house_plant") || e.dataObject.src.includes("inside_bin") || e.dataObject.src.includes("plant_yo") 
 		|| e.dataObject.src.includes("lamp_red") || e.dataObject.src.includes("tv") || e.dataObject.src.includes("small_table") || e.dataObject.src.includes("sink") 
-		|| e.dataObject.src.includes("rug") || e.dataObject.src.includes("yellow_chair") || e.dataObject.src.includes("yellow_lamp");
+		|| e.dataObject.src.includes("rug") || e.dataObject.src.includes("yellow_chair") || e.dataObject.src.includes("yellow_lamp") || e.dataObject.src.includes("toilet");
 	});
 	let furnitureOffice : ImageModel[] = assets.filter((e)=>{
 		return e.dataObject.src.includes("computer_table") || e.dataObject.src.includes("house_plant") || e.dataObject.src.includes("plant_yo") || e.dataObject.src.includes("couch_nice") 
 		|| e.dataObject.src.includes("bin_hop") || e.dataObject.src.includes("office_chair") || e.dataObject.src.includes("phone_table") || e.dataObject.src.includes("small_table") 
-		|| e.dataObject.src.includes("wall_thing") || e.dataObject.src.includes("blue_lamp");
+		|| e.dataObject.src.includes("wall_thing") || e.dataObject.src.includes("blue_lamp") || e.dataObject.src.includes("toilet") || e.dataObject.src.includes("urinal")
+		|| e.dataObject.src.includes("elevator");
 	});
 	let furnitureShop : ImageModel[] = assets.filter((e)=>{
 		return e.dataObject.src.includes("bin_x") || e.dataObject.src.includes("boxes") || e.dataObject.src.includes("cashier_desk") || e.dataObject.src.includes("flowers_a")
 		|| e.dataObject.src.includes("shop_") || e.dataObject.src.includes("thing_") || e.dataObject.src.includes("vegetables_") || e.dataObject.src.includes("yellow_stand")
 		|| e.dataObject.src.includes("magazine_") || e.dataObject.src.includes("gate_left") || e.dataObject.src.includes("gate_right") || e.dataObject.src.includes("poster") 
-		|| e.dataObject.src.includes("wall_thing") || e.dataObject.src.includes("water_puddle");
+		|| e.dataObject.src.includes("wall_thing") || e.dataObject.src.includes("water_puddle") || e.dataObject.src.includes("shelves_") 
+		|| e.dataObject.src.includes("toilet") || e.dataObject.src.includes("urinal") || e.dataObject.src.includes("elevator");
 	});
 	let furnitureStreet : ImageModel[] = assets.filter((e)=>{
 		return e.dataObject.src.includes("bench_") || e.dataObject.src.includes("bin_a") || e.dataObject.src.includes("bin_x") || e.dataObject.src.includes("bolard")
@@ -71,11 +79,14 @@ import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
 </style>
 <div class:invisible={hide}>
 	<div>
+		<!-- This select corresponds to the SpriteTypeEnum -->
+		<!-- Selecting a option will trigger the selection of the SpriteTypeEnum at that index -->
 		<select name="sprite-type-select" bind:this={spriteFilterSelect} on:change={()=>{handleSpriteFilterChange()}}>
 			<option selected>All</option>
 			<option >Cars</option>
 			<option >Characters</option>
-			<option >Doors & Windows</option>
+			<option >Doors, Windows, Stairs</option>
+			<option >Furniture (bar)</option>
 			<option >Furniture (house)</option>
 			<option >Furniture (office)</option>
 			<option >Furniture (shop)</option>
@@ -106,6 +117,12 @@ import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
 	<!--Doors & Windows-->
 	<div class:invisible={selection !== SpriteTypesEnum.doorsAndWindows}>
 		{#each doorsAndWindows as sprite}
+			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
+		{/each}			
+	</div>
+		<!--Furniture bar-->
+	<div class:invisible={selection !== SpriteTypesEnum.furnitureBar}>
+		{#each furnitureBar as sprite}
 			<Canvas canvasType={CanvasTypeEnum.spriteCanvas} spriteModel={sprite} handleCanvasClick={handleCanvasClick}/>
 		{/each}			
 	</div>

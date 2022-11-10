@@ -12,7 +12,7 @@ import type { MapObjectSpriteModel } from '../models/MapObjectSpriteModel';
 
 export const getMapModelForNewMap = ( menuData: object ) => {
     let mapModel: MapModel = {
-        name: menuData["name"],
+        key: menuData["name"],
         columns: parseInt( menuData["columns"] ),
         rows: parseInt( menuData["rows"] ),
         tileSet: menuData["tilesheet"],

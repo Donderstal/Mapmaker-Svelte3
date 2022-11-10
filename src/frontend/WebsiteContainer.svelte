@@ -17,7 +17,7 @@ import GoBackButton from './partials/GoBackButton.svelte';
             activeMap = getMapModelForNewMap( menuData );
         }
         else {
-            activeMap = $user.maps.filter((e)=>{return e.name === menuData})[0];
+            activeMap = $user.maps.filter((e)=>{return e.key === menuData})[0];
         }
         inMapMakerMode.set( true );
     }

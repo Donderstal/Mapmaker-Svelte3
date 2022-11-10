@@ -9,7 +9,6 @@
 
 	export let handleEditModeSwitch;
 	export let handleMapCanvasClick;
-	export let getMapMakerSelection = undefined;
 	export let registerMouseClickStartInMap = undefined;
 	export let registerMouseClickEndInMap = undefined;
 

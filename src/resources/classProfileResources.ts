@@ -24,6 +24,9 @@ const MONKEY_CEO = "MONKEY CEO";
 const WHITE_PONY_TAIL_LADY = "WHITE PONY TAIL LADY";
 const BLACK_PONY_TAIL_LADY = "BLACK PONY TAIL LADY";
 const ROBOT = "ROBOT";
+const ROBOT_BLACK = "ROBOT_BLACK";
+const ROBOT_WHITE = "ROBOT_WHITE";
+const ROBOT_GREY = "ROBOT_GREY";
 const PINK_HAIR_NERD_LADY = "PINK HAIR NERD LADY";
 const BLONDE_NERD_LADY = "BLONDE NERD LADY";
 const DARK_HAIR_NERD_LADY = "DARK HAIR NERD LADY";
@@ -34,7 +37,8 @@ const profileList = [
     BUSINESS_MAN, STRONG_GUY, BURLY_GUY, GREEN_SHIRTED_STRONG_GUY, DORKY_GUY, TOUGH_GUY_WITH_DARK_HAIR,
     TOUGH_GUY_WITH_COOL_SHIRT, FAT_BUFF_GUY, BALD_BEER_BELLY_GUY, BLONDE_BEER_BELLY_GUY, PINK_HAIRED_FAT_GUY,
     YELLOW_SHIRT_LADY, GREEN_HAIR_LADY, SUPERMARKET_MANAGER, MONKEY_CEO, WHITE_PONY_TAIL_LADY,
-    BLACK_PONY_TAIL_LADY, ROBOT, PINK_HAIR_NERD_LADY, BLONDE_NERD_LADY, DARK_HAIR_NERD_LADY, MAIN_CHARACTER
+    BLACK_PONY_TAIL_LADY, ROBOT, ROBOT_BLACK, ROBOT_WHITE, ROBOT_GREY,
+    PINK_HAIR_NERD_LADY, BLONDE_NERD_LADY, DARK_HAIR_NERD_LADY, MAIN_CHARACTER
 ];
 
 export const getProfileName = ( pngName ) => {
@@ -173,6 +177,15 @@ const getCharacterSpriteModel = ( className ) => {
             break;
         case ROBOT:
             png = 'robot.png';
+            break;
+        case ROBOT_BLACK:
+            png = 'Robot_black.png';
+            break;
+        case ROBOT_GREY:
+            png = 'Robot_grey.png';
+            break;
+        case ROBOT_WHITE:
+            png = 'Robot_white.png';
             break;
         case PINK_HAIR_NERD_LADY:
             png = 'tumbler_girl.png';

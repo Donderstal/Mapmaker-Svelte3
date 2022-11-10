@@ -6,13 +6,14 @@ import type { SpawnPointModel } from "./SpawnPointModel";
 import type { TileModel } from "./TileModel";
 
 export type MapModel = {
-    name: string;
+    key: string;
     columns: number;
     rows: number;
     tileSet: string;
 
     outdoors: boolean;
     music?: string;
+    location?: string;
 
     grid: TileModel[];
     frontGrid: TileModel[];
