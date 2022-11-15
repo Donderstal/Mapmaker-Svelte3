@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
     import InputDiv from "../partials/InputDiv.svelte";
-    import { user } from '../../stores.ts'
+    import { user } from '../../stores'
     import { TilesheetTypeEnum } from "../../enumerables/TilesheetTypeEnum";
+    import type { TilesheetModel } from "../../models/TilesheetModel";
 
     export let optionListener;
     export let visible;
@@ -20,9 +21,9 @@
         }
     }
 
-    const outdoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.outdoors});
-    const indoorSheets = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.indoors});
-    const obsoleteSheets  = Object.values($user.tilesets).filter((e)=>{return e.dataObject.category === TilesheetTypeEnum.obsolete});
+    const outdoorSheets = Object.values($user.tilesets).filter((e: TilesheetModel)=>{return e.category === TilesheetTypeEnum.outdoors});
+    const indoorSheets = Object.values($user.tilesets).filter((e: TilesheetModel)=>{return e.category === TilesheetTypeEnum.indoors});
+    const obsoleteSheets  = Object.values($user.tilesets).filter((e: TilesheetModel)=>{return e.category === TilesheetTypeEnum.obsolete});
 </script>
 <style>
     .invisible {
@@ -51,17 +52,17 @@
         <option hidden disabled selected value> -- select a tilesheet -- </option>
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
-                <option value="{outdoorSheet.dataObject.key}">{outdoorSheet.dataObject.name}</option>
+                <option value="{outdoorSheet.key}">{outdoorSheet.key}</option>
             {/each}
         </optgroup>
         <optgroup label="Indoor sheets">
             {#each indoorSheets as indoorSheet}
-                <option value="{indoorSheet.dataObject.key}">{indoorSheet.dataObject.name}</option>
+                <option value="{indoorSheet.key}">{indoorSheet.key}</option>
             {/each}
         </optgroup>
         <optgroup label="Obsolete sheets">
             {#each obsoleteSheets as obsoleteSheet}
-                <option value="{obsoleteSheet.dataObject.key}">{obsoleteSheet.dataObject.name}</option>
+                <option value="{obsoleteSheet.key}">{obsoleteSheet.key}</option>
             {/each}
         </optgroup>
 	</select>

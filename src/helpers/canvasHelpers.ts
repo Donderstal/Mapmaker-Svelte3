@@ -1,29 +1,28 @@
-import type { ImageModel } from "../models/ImageModel";
 import type { SpriteFrameModel } from "../models/SpriteFrameModel";
 import type { Tile } from "../canvas/Tile";
 import { GRID_BLOCK_IN_SHEET_PX, SIZE_DIVIDER, TILE_SIZE } from "../resources/constants";
 import type { TileModel } from "../models/TileModel";
 
-export const drawToFittingCanvas = ( imageModel: ImageModel, canvas: HTMLCanvasElement, sX, sY, sWidth, sHeight, dX, dY ) : void => {
+export const drawToFittingCanvas = ( image: HTMLImageElement, canvas: HTMLCanvasElement, sX, sY, sWidth, sHeight, dX, dY ) : void => {
     canvas.width = sWidth / SIZE_DIVIDER;
     canvas.height = sHeight / SIZE_DIVIDER;
-    drawToCanvas( imageModel, canvas, sX, sY, sWidth, sHeight, dX, dY );
+    drawToCanvas( image, canvas, sX, sY, sWidth, sHeight, dX, dY );
 }
 
-export const drawToCanvas = ( imageModel: ImageModel, canvas: HTMLCanvasElement, sX, sY, sWidth, sHeight, dX, dY ): void => {
+export const drawToCanvas = ( image: HTMLImageElement, canvas: HTMLCanvasElement, sX, sY, sWidth, sHeight, dX, dY ): void => {
     const context = canvas.getContext( "2d" );
     context.drawImage(
-        imageModel.image,
+        image,
         sX, sY, sWidth, sHeight,
         dX, dY, sWidth / SIZE_DIVIDER, sHeight / SIZE_DIVIDER
     );
 }
 
-export const drawSpriteToTileOnCanvas = ( imageModel: ImageModel, canvas: HTMLCanvasElement, frame: SpriteFrameModel, tile: Tile ): void => {
+export const drawSpriteToTileOnCanvas = ( image: HTMLImageElement, canvas: HTMLCanvasElement, frame: SpriteFrameModel, tile: Tile ): void => {
     const context = canvas.getContext( "2d" );
     const xyInCanvas = getCanvasXyForSprite( tile, frame );
     context.drawImage(
-        imageModel.image,
+        image,
         frame.x, frame.y,
         frame.width, frame.height,
         xyInCanvas.x, xyInCanvas.y,

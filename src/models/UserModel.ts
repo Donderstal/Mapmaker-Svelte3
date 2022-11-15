@@ -1,13 +1,13 @@
-import type { ImageModel } from "./ImageModel"
 import type { MapModel } from "./MapModel"
 import type { NeighbourhoodModel } from "./NeighbourhoodModel"
+import type { SpriteDataModel } from "./SpriteDataModel"
+import type { TilesheetModel } from "./TilesheetModel"
 
 export type UserModel = {
     name: string,
 
-    characterPngs: ImageModel[],
-    assetPngs: ImageModel[],
-    tilesets: ImageModel[],
+    sprites: SpriteDataModel[],
+    tilesets: TilesheetModel[],
 
     maps: MapModel[],
     neighbourhoods: NeighbourhoodModel[],

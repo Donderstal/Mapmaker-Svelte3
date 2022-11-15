@@ -5,6 +5,7 @@ export type TilesheetModel = {
     key: string,
     src: string,
     uniqueTiles: number,
+    image: HTMLImageElement;
     category: TilesheetTypeEnum,
     blocked: []
 }

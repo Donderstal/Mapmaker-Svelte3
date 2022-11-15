@@ -1,8 +1,5 @@
-import type { MapObjectSpriteModel } from "../models/MapObjectSpriteModel";
 import type { CanvasObjectModel } from "../models/CanvasObjectModel";
-import type { MapObjectModel } from "../models/MapObjectModel";
 
-import { mapObjectSpriteModels } from "../resources/mapObjectResources";
 
 export const orderCanvasObjectsByCellLocation = ( canvasObjects: CanvasObjectModel[] ): CanvasObjectModel[] => {
     let backSprites: CanvasObjectModel[] = [];
@@ -10,20 +7,14 @@ export const orderCanvasObjectsByCellLocation = ( canvasObjects: CanvasObjectMod
     let frontSprites: CanvasObjectModel[] = [];
 
     canvasObjects.forEach( ( e: CanvasObjectModel ): void => {
-        if ( ( e as MapObjectModel ).type ) {
-            const spriteData = getAssociatedMapObjectSpriteModel( ( e as MapObjectModel ) );
-            if ( spriteData.onBackground ) {
-                backSprites.push( e );
-            }
-            else if ( spriteData.notGrounded ) {
-                frontSprites.push( e )
-            }
-            else {
-                standardSprites.push(e)
-            }
+        if ( e.spriteDataModel.onBackground ) {
+            backSprites.push( e );
+        }
+        else if ( e.spriteDataModel.notGrounded ) {
+            frontSprites.push( e )
         }
         else {
-            standardSprites.push( e );
+            standardSprites.push( e )
         }
     } )
 
@@ -46,8 +37,4 @@ export const sortCanvasObjectArray = ( canvasObjects: CanvasObjectModel[] ): Can
             return 0
         }
     } )
-}
-
-export const getAssociatedMapObjectSpriteModel = ( mapObject: MapObjectModel ): MapObjectSpriteModel => {
-    return mapObjectSpriteModels.filter( ( e: MapObjectSpriteModel ) => { return mapObject.type == e.key } )[0];
 }

@@ -1,85 +1,59 @@
-import type { CharacterModel } from "../models/CharacterModel";
-import type { MapObjectModel } from "../models/MapObjectModel";
-import { mapObjectSpriteModels } from "../resources/mapObjectResources";
-import { characterSpriteModels } from "../resources/classProfileResources";
-import type { CharacterSpriteModel } from "../models/CharacterSpriteModel";
-import type { MapObjectSpriteModel } from "../models/MapObjectSpriteModel";
-import type { ImageModel } from "../models/ImageModel";
 import type { SpriteFrameModel } from "../models/SpriteFrameModel"
 import { DirectionEnum } from "../enumerables/DirectionEnum";
 import { SpriteSheetAlignmentEnum } from "../enumerables/SpriteSheetAlignmentEnum";
 import { GRID_BLOCK_IN_SHEET_PX, MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET } from "../resources/constants";
+import type { SpriteDataModel } from "../models/SpriteDataModel";
 
-export const getImageModelForCharacter = ( character: CharacterModel ): ImageModel => {
-    return getCharacterImageModelFromSpriteModel(
-        characterSpriteModels.filter( ( e: CharacterSpriteModel ) => { return character.sprite == e.src } )[0]
-    );
-}
-
-export const getImageModelForObject = ( mapObject: MapObjectModel ): ImageModel => {
-    return getMapObjectImageModelFromSpriteModel(
-        mapObjectSpriteModels.filter( ( e: MapObjectSpriteModel ) => { return mapObject.type == e.key } )[0]
-    );
-}
-
-export const getCharacterImageModelFromSpriteModel = ( characterSprite: CharacterSpriteModel ): ImageModel => {
-    const image: ImageModel = {
-        image: new Image(),
-        dataObject: characterSprite
+export const getSpriteFrame = ( dataModel: SpriteDataModel, direction: DirectionEnum = DirectionEnum.down ): SpriteFrameModel => {
+    let frameXy = {x: 0, y: 0}
+    if ( dataModel.canMove ) {
+        let directionFrames = dataModel.movementFrames[direction];
+        frameXy = directionFrames[0];
     }
-    image.image.src = "/png-files/sprites/" + characterSprite.src;
-    return image;
+    return getSpriteFrameForPosition( frameXy, dataModel, direction );
 }
 
-export const getMapObjectImageModelFromSpriteModel = ( mapObjectSprite: MapObjectSpriteModel ): ImageModel => {
-    const image: ImageModel = {
-        image: new Image(),
-        dataObject: mapObjectSprite
+export const getSpriteFrameForPosition = ( framePosition: { x: number, y: number }, dataModel: SpriteDataModel, direction: DirectionEnum = null ): SpriteFrameModel => {
+    let width = getFrameWidth( dataModel, direction );
+    let height = getFrameHeight( dataModel, direction );
+    const model: SpriteFrameModel = {
+        x: framePosition.x,
+        y: framePosition.y,
+        width: width,
+        height: height,
+        direction: direction
     }
-    image.image.src = "/png-files/sprite-assets/" + mapObjectSprite.src;
-    return image;
+    return model;
 }
 
-export const getSpriteFrame = ( imageModel: ImageModel, direction: DirectionEnum ): SpriteFrameModel => {
-    if ( ( imageModel.dataObject as CharacterSpriteModel ).hasOwnProperty( "className" ) ) {
-        return getCharacterSpriteFrame( direction );
+export const getFrameWidth = ( dataModel: SpriteDataModel, direction: DirectionEnum = null ): number => {
+    if ( dataModel.dimensionalAlignment === SpriteSheetAlignmentEnum.standard || direction == null ) {
+        return dataModel.widthBlocks * GRID_BLOCK_IN_SHEET_PX
     }
-    else {
-        if ( ( imageModel.dataObject as MapObjectSpriteModel ).dimensionalAlignment === SpriteSheetAlignmentEnum.horiVert ) {
-            return getVariableSizeObjectSpriteFrame( imageModel.dataObject as MapObjectSpriteModel, direction );
+    else if ( dataModel.dimensionalAlignment === SpriteSheetAlignmentEnum.horiVert ) {
+        if ( !isHorizontal( direction ) ) {
+            return dataModel.vertWidthBlocks * GRID_BLOCK_IN_SHEET_PX
         }
         else {
-            return getStandardObjectSpriteFrame( imageModel.dataObject as MapObjectSpriteModel, direction );
+            return dataModel.horiWidthBlocks * GRID_BLOCK_IN_SHEET_PX
         }
     }
 }
 
-const getCharacterSpriteFrame = ( direction: DirectionEnum ): SpriteFrameModel => {
-    const frame: SpriteFrameModel = {
-        x: 0, y: MAP_SPRITE_HEIGHT_IN_SHEET * direction,
-        width: MAP_SPRITE_WIDTH_IN_SHEET, height: MAP_SPRITE_HEIGHT_IN_SHEET,
-        direction: direction
+export const getFrameHeight = ( dataModel: SpriteDataModel, direction: DirectionEnum = null ): number => {
+    if ( dataModel.dimensionalAlignment === SpriteSheetAlignmentEnum.standard || direction == null ) {
+        return dataModel.heightBlocks * GRID_BLOCK_IN_SHEET_PX
     }
-    return frame;
+    else if ( dataModel.dimensionalAlignment === SpriteSheetAlignmentEnum.horiVert ) {
+        if ( !isHorizontal( direction ) ) {
+            return dataModel.vertHeightBlocks * GRID_BLOCK_IN_SHEET_PX
+        }
+        else {
+            return dataModel.horiHeightBlocks * GRID_BLOCK_IN_SHEET_PX
+        }
+    }
 }
 
-const getStandardObjectSpriteFrame = ( mapObjectModel: MapObjectSpriteModel, direction: DirectionEnum ): SpriteFrameModel => {
-    const frame: SpriteFrameModel = {
-        x: 0, y: 0,
-        width: mapObjectModel.widthBlocks * GRID_BLOCK_IN_SHEET_PX, height: mapObjectModel.heightBlocks * GRID_BLOCK_IN_SHEET_PX,
-        direction: direction
-    }
-    return frame;
-}
-
-const getVariableSizeObjectSpriteFrame = ( mapObjectModel: MapObjectSpriteModel, direction: DirectionEnum ): SpriteFrameModel => {
-    const widthInSheet = ( ( direction == DirectionEnum.down || direction == DirectionEnum.up ) ? mapObjectModel.vertWidthBlocks : mapObjectModel.horiWidthBlocks ) * GRID_BLOCK_IN_SHEET_PX;
-    const heightInSheet = ( ( direction == DirectionEnum.down || direction == DirectionEnum.up ) ? mapObjectModel.vertHeightBlocks : mapObjectModel.horiHeightBlocks ) * GRID_BLOCK_IN_SHEET_PX;
-    const frames: { x: number, y: number }[] = mapObjectModel.movementFrames[direction];
-    const frame: SpriteFrameModel = {
-        x: frames[0].x, y: frames[0].y,
-        width: widthInSheet, height: heightInSheet,
-        direction: direction
-    }
-    return frame;
+const isHorizontal = ( direction: DirectionEnum ): boolean => {
+    return direction === DirectionEnum.left || direction === DirectionEnum.right;
 }

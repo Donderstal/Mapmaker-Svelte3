@@ -1653,8 +1653,11 @@ export const sheets = {
 
 export const getTileSheetModels = () => {
     return Object.values( sheets ).map( ( e ) => {
+        let image = new Image();
+        image.src = "/png-files/tilesheets/" + e["src"];
         let model: TilesheetModel = {
             name: e["name"],
+            image: image,
             key: e["key"],
             src: e["src"],
             uniqueTiles: e["uniqueTiles"],

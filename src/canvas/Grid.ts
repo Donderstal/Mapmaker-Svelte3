@@ -1,5 +1,4 @@
 import { Tile } from "./Tile";
-import type { ImageModel } from "../models/ImageModel";
 import type { TileModel } from "../models/TileModel";
 import { GRID_BLOCK_IN_SHEET_PX, SHEET_XY_VALUES, TILE_SIZE } from "../resources/constants";
 import { mirrorOrFlipTile } from "../helpers/canvasHelpers";
@@ -72,7 +71,7 @@ export class Grid {
         tile.setModel( tileModel );
     }
 
-    drawTiles( context: CanvasRenderingContext2D, sheet: ImageModel ): void {
+    drawTiles( context: CanvasRenderingContext2D, sheet: HTMLImageElement ): void {
         this.tiles.filter( ( tile ) => {
             return tile.tileModel.id !== "E";
         } ).forEach( ( tile ) => {
@@ -80,10 +79,10 @@ export class Grid {
         } )
     }
 
-    drawTile( context: CanvasRenderingContext2D, sheet: ImageModel, tile: Tile ): void {
+    drawTile( context: CanvasRenderingContext2D, sheet: HTMLImageElement, tile: Tile ): void {
         let tileModel: TileModel = tile.tileModel;
         const sheetXy = SHEET_XY_VALUES[tile.tileModel.id];
-        mirrorOrFlipTile( sheet.image, tileModel, this.canvas.getContext("2d"), sheetXy );
+        mirrorOrFlipTile( sheet, tileModel, this.canvas.getContext("2d"), sheetXy );
         context.drawImage(
             this.canvas,
             0, 0,

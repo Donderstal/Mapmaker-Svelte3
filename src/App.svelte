@@ -1,6 +1,4 @@
 <script lang="ts">
-    export let name: string;
-
     import WebsiteContainer from "./frontend/WebsiteContainer.svelte";
 </script>
 

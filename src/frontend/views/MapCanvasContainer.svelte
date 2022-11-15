@@ -3,9 +3,9 @@
 
 	import { CanvasTypeEnum } from '../../enumerables/CanvasTypeEnum';
 
-	import type { ImageModel } from '../../models/ImageModel';
 	import type { MapModel } from '../../models/MapModel';
 	import type { Tile } from "../../canvas/Tile";
+    import type { TilesheetModel } from "../../models/TilesheetModel";
 
 	export let handleEditModeSwitch;
 	export let handleMapCanvasClick;
@@ -13,7 +13,7 @@
 	export let registerMouseClickEndInMap = undefined;
 
 	let activeMap : MapModel;
-	let activeSheet : ImageModel;
+	let activeSheet : TilesheetModel;
 
 	let backTilesCanvas: Canvas;
 	let backSpritesCanvas: Canvas;
@@ -21,7 +21,7 @@
 	let frontSpritesCanvas: Canvas;
 	let activeCanvas: CanvasTypeEnum = CanvasTypeEnum.frontSprites;
 		
-	export const initializeMapMakerCanvases = ( activeMapModel : MapModel, activeSheetModel : ImageModel ) : void => {
+	export const initializeMapMakerCanvases = ( activeMapModel : MapModel, activeSheetModel : TilesheetModel ) : void => {
 		activeMap = activeMapModel;
 		activeSheet = activeSheetModel;
 		initTileCanvas( backTilesCanvas, true );
@@ -55,10 +55,10 @@
 		canvas.setMapModel( activeMap, activeSheet, isBackground );
 		canvas.drawTileBordersToCanvas( );
 		if ( canvas === backSpritesCanvas ) {
-			canvas.drawSpritesToCanvas( [...activeMap.mapObjects, ...activeMap.characters] );
+			canvas.drawSpritesToCanvasGrid( activeMap.sprites );
 		}
 		else {
-			canvas.drawSpritesToCanvas( [...activeMap.frontMapObjects, ...activeMap.frontCharacters] )
+			canvas.drawSpritesToCanvasGrid( activeMap.frontSprites )
 		}
 	}
 	

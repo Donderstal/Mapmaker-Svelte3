@@ -1,6 +1,5 @@
-﻿import type { CharacterModel } from "./CharacterModel";
+﻿import type { CanvasObjectModel } from "./CanvasObjectModel";
 import type { DoorModel } from "./DoorModel";
-import type { MapObjectModel } from "./MapObjectModel";
 import type { RoadModel } from "./RoadModel";
 import type { SpawnPointModel } from "./SpawnPointModel";
 import type { TileModel } from "./TileModel";
@@ -18,11 +17,8 @@ export type MapModel = {
     grid: TileModel[];
     frontGrid: TileModel[];
 
-    characters: CharacterModel[];
-    frontCharacters: CharacterModel[];
-
-    mapObjects: MapObjectModel[];
-    frontMapObjects: MapObjectModel[];
+    sprites: CanvasObjectModel[];
+    frontSprites: CanvasObjectModel[];
 
     spawnPoints: SpawnPointModel[];
     roads: RoadModel[];

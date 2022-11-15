@@ -1,7 +1,6 @@
-import type { CharacterModel } from "../models/CharacterModel";
+import type { CanvasObjectModel } from "../models/CanvasObjectModel";
 import type { DoorModel } from "../models/DoorModel";
 import type { MapModel } from "../models/MapModel";
-import type { MapObjectModel } from "../models/MapObjectModel";
 import type { RoadModel } from "../models/RoadModel";
 import type { SpawnPointModel } from "../models/SpawnPointModel";
 import type { TileModel } from "../models/TileModel";
@@ -19,11 +18,8 @@ export const getJsonFromMapModel = ( model: MapModel ): object => {
         "grid": model.grid.map( mapTileToObject ),
         "frontGrid": model.frontGrid.map( mapTileToObject ),
 
-        "characters": model.characters.map( mapCharacterToObject ),
-        "frontCharacters": model.frontCharacters.map( mapCharacterToObject ),
-
-        "mapObjects": model.mapObjects.map( mapMapObjectToObject ),
-        "frontMapObjects": model.frontMapObjects.map( mapMapObjectToObject ),
+        "sprites": model.sprites.map( mapCanvasObjectToJsonObject ),
+        "frontSprites": model.frontSprites.map( mapCanvasObjectToJsonObject ),
 
         "spawnPoints": model.spawnPoints.map( mapSpawnPointToObject ),
         "roads": model.roads.map( mapRoadToObject ),
@@ -39,22 +35,13 @@ const mapTileToObject = ( tile: TileModel ): object => {
     }
 }
 
-const mapCharacterToObject = ( character: CharacterModel ): object => {
+const mapCanvasObjectToJsonObject = ( canvasObject: CanvasObjectModel ) => {
     return {
-        "animation_type": character.animation_type,
-        "direction": character.direction,
-        "sprite": character.sprite,
-        "row": character.row,
-        "column": character.column
-    }
-}
-
-const mapMapObjectToObject = ( mapObject: MapObjectModel ): object => {
-    return {
-        "type": mapObject.type,
-        "direction": mapObject.direction,
-        "row": mapObject.row,
-        "column": mapObject.column
+        "type": canvasObject.type,
+        "column": canvasObject.column,
+        "row": canvasObject.row,
+        "direction": canvasObject.direction,
+        "animation_type": canvasObject.animationType
     }
 }
 

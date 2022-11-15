@@ -3,14 +3,9 @@
 	import Canvas from '../partials/Canvas.svelte';
 	import { SHEET_XY_VALUES, TILE_SIZE } from '../../resources/constants';
 	import Button from '../partials/Button.svelte';
-	import { getImageModelForCharacter, getImageModelForObject } from '../../helpers/modelConversionHelpers';
-	import type { MapObjectSpriteModel } from '../../models/MapObjectSpriteModel';
-	import { SpriteSheetAlignmentEnum } from '../../enumerables/SpriteSheetAlignmentEnum';
 	import type { TileModel } from '../../models/TileModel';
-	import type { ImageModel } from '../../models/ImageModel';
-	import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
-	import type { CharacterModel } from '../../models/CharacterModel';
-	import type { MapObjectModel } from '../../models/MapObjectModel';
+    import type { CanvasObjectModel } from '../../models/CanvasObjectModel';
+    import type { TilesheetModel } from '../../models/TilesheetModel';
 
 	let utilityCanvas;
 
@@ -30,22 +25,10 @@
 	}
 	
 	export const setSpriteToUtilityCanvas = ( canvasObjectModel: CanvasObjectModel ): void => {
-		if ( (canvasObjectModel as CharacterModel).hasOwnProperty("sprite") ) {
-			const imageModel = getImageModelForCharacter(canvasObjectModel as CharacterModel);
-			utilityCanvas.setCharacterToCanvas( imageModel, (canvasObjectModel as CharacterModel).direction);
-		}
-		else {
-			const imageModel = getImageModelForObject(canvasObjectModel as MapObjectModel);
-			if ( (imageModel.dataObject as MapObjectSpriteModel).dimensionalAlignment === SpriteSheetAlignmentEnum.horiVert ) {
-				utilityCanvas.setAlignedSpriteFrameToCanvas( imageModel, (canvasObjectModel as MapObjectModel).direction);
-			}
-			else {
-				utilityCanvas.setSpriteFrameToCanvas( imageModel );
-			}
-		}
+		utilityCanvas.setSpriteDataModelToCanvas(canvasObjectModel.spriteDataModel, canvasObjectModel.direction)
 	}
 
-	export const setTileToUtilityCanvas = ( tileModel: TileModel, activeSheet: ImageModel ) => {
+	export const setTileToUtilityCanvas = ( tileModel: TileModel, activeSheet: TilesheetModel ) => {
 		const xy: {x: number, y: number} = SHEET_XY_VALUES[tileModel.id];
 		utilityCanvas.drawTileToFittingCanvas( activeSheet, tileModel, xy );
 	}

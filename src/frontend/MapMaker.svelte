@@ -4,24 +4,21 @@
 	import { user } from '../stores';
 	import MapCanvasContainer from './views/MapCanvasContainer.svelte';
 	import MapTilesheetsContainer from './views/MapTilesheetsContainer.svelte';
-	import type { ImageModel } from '../models/ImageModel';
 	import MapUiContainer from './views/MapUiContainer.svelte';
 	import SpriteCanvasContainer from './views/SpriteCanvasContainer.svelte';
 	import { CanvasTypeEnum } from '../enumerables/CanvasTypeEnum';
 	import type { Tile } from '../canvas/Tile';
 	import type { TileModel } from '../models/TileModel';
 	import type { CanvasObjectModel } from '../models/CanvasObjectModel';
-	import type { CharacterSpriteModel } from '../models/CharacterSpriteModel';
-	import type { MapObjectSpriteModel } from '../models/MapObjectSpriteModel';
-	import { getCharacterModelFromSpriteModel, getMapObjectModelFromSpriteModel } from '../helpers/modelFactory';
 	import { DirectionEnum } from '../enumerables/DirectionEnum';
-	import type { CharacterModel } from '../models/CharacterModel';
-	import type { MapObjectModel } from '../models/MapObjectModel';
 	import { addSpriteToMapModel, addTileToMapModel, removeSpriteModelFromMap, removeTileModelFromMap } from '../helpers/mapPropertyHelpers';
 	import { getJsonFromMapModel } from '../helpers/exportHelpers';
+    import type { TilesheetModel } from '../models/TilesheetModel';
+    import type { SpriteDataModel } from '../models/SpriteDataModel';
+    import { initCanvasObjectModelFromSpriteDataModel } from '../helpers/modelFactory';
 
 	export let activeMap : MapModel;
-	let activeSheet : ImageModel;
+	let activeSheet : TilesheetModel
 
 	let selection : TileModel | CanvasObjectModel;
 	let selectionIsTile : boolean;
@@ -39,8 +36,8 @@
 	let clickStartRow;
 
 	onMount(()=>{
-		let tileSheets : ImageModel[] = Object.values($user.tilesets);
-		activeSheet = tileSheets.filter((e)=>{return e.dataObject.key === activeMap.tileSet})[0];
+		let tileSheets : TilesheetModel[] = Object.values($user.tilesets);
+		activeSheet = tileSheets.filter((e)=>{return e.key === activeMap.tileSet})[0];
 
 		mapTilesheetsContainer.initializeTilesheetColumn( activeSheet );
 		mapCanvasContainer.initializeMapMakerCanvases( activeMap, activeSheet );
@@ -139,14 +136,12 @@
 		selectionIsTurnable = true;
 	}
 
-	const handleSpritesheetClick = (canvasObjectModel: CharacterSpriteModel|MapObjectSpriteModel): void => {
-		setSelection((canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className") 
-			? getCharacterModelFromSpriteModel(canvasObjectModel as CharacterSpriteModel) 
-			: getMapObjectModelFromSpriteModel(canvasObjectModel as MapObjectSpriteModel));
+	const handleSpritesheetClick = (dataModel: SpriteDataModel): void => {
+		setSelection(initCanvasObjectModelFromSpriteDataModel(dataModel))
 		mapUiContainer.setSpriteToUtilityCanvas(selection as CanvasObjectModel);
 		selectionIsTile = false;
 		selectionIsSprite = true;
-		selectionIsTurnable = (canvasObjectModel as MapObjectSpriteModel).isCar || (canvasObjectModel as CharacterSpriteModel).hasOwnProperty("className");
+		selectionIsTurnable = dataModel.isCar || dataModel.isCharacter;
 	}
 
 	const handleKeyPress = (event: KeyboardEvent): void => {
@@ -189,12 +184,7 @@
 
 	const turnSelectedSprite = (direction: DirectionEnum): void => {
 		const selectedSprite = selection as CanvasObjectModel;
-		if ( selectedSprite.hasOwnProperty("sprite") ) {
-			(selectedSprite as CharacterModel).direction = direction;
-		}
-		else {
-			(selectedSprite as MapObjectModel).direction = direction;
-		}
+		selectedSprite.direction = direction;
 		mapUiContainer.setSpriteToUtilityCanvas(selectedSprite);
 	}
 

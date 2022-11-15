@@ -7,7 +7,7 @@
     import MainMenu from './MainMenu.svelte';
     import MapMaker from './MapMaker.svelte';
     import MapOverview from './MapOverview.svelte';
-import GoBackButton from './partials/GoBackButton.svelte';
+    import GoBackButton from './partials/GoBackButton.svelte';
 
     let activeMap;
     let activeNeighbourhood;

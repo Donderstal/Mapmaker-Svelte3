@@ -1,38 +1,30 @@
 <script lang="ts">
-	import type { ImageModel } from '../../models/ImageModel';
 	import { GRID_BLOCK_IN_SHEET_PX } from '../../resources/constants';
 	import { CanvasTypeEnum } from '../../enumerables/CanvasTypeEnum';
 
 	import Canvas from '../partials/Canvas.svelte';
 	import type { Tile } from '../../canvas/Tile';
+    import type { TilesheetModel } from '../../models/TilesheetModel';
 
 	export let hide;
 	export let handleTilesheetClick;
 
 	let tilesheetCanvasLeft  : Canvas;
 	let tilesheetCanvasRight : Canvas;
-	let activeSheet : ImageModel
+	let activeSheet : TilesheetModel;
 
-	export const initializeTilesheetColumn = ( activeSheetModel : ImageModel ) => {
+	export const initializeTilesheetColumn = ( activeSheetModel : TilesheetModel ) => {
 		[tilesheetCanvasLeft, tilesheetCanvasRight].forEach((e)=>{e.clearGrid()});
 		activeSheet = activeSheetModel;
 
-		if ( activeSheet.image.height > window.innerHeight ) {
-			const tilesheetCanvases = [tilesheetCanvasLeft, tilesheetCanvasRight]
-			const gridRows = (activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX) / tilesheetCanvases.length;
-			const tilesInSheetGrid = ( gridRows * 4 );
-			tilesheetCanvases.forEach((e, index)=>{
-				e.initializeGrid( 4, gridRows, tilesInSheetGrid * index );
-				e.setTilesetToCanvas( activeSheet, index, tilesheetCanvases.length );
-				e.drawTileBordersToCanvas( );
-			})
-		}
-		else {
-			const gridRows = activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX;
-			tilesheetCanvasLeft.initializeGrid( 4, gridRows );
-			tilesheetCanvasLeft.setImageToCanvas( activeSheet );
-			tilesheetCanvasLeft.drawTileBordersToCanvas( );
-		}
+		const tilesheetCanvases = [tilesheetCanvasLeft, tilesheetCanvasRight]
+		const gridRows = (activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX) / tilesheetCanvases.length;
+		const tilesInSheetGrid = ( gridRows * 4 );
+		tilesheetCanvases.forEach((e, index)=>{
+			e.initializeGrid( 4, gridRows, tilesInSheetGrid * index );
+			e.setTilesetToCanvas( activeSheet, index, tilesheetCanvases.length );
+			e.drawTileBordersToCanvas( );
+		})
 	}
 
 	const handleCanvasClick = ( tile: Tile ) => {

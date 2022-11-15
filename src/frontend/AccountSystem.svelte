@@ -39,7 +39,7 @@
 		resetForm();
 		activeFormType = form;
 		activeForm = getFormByActiveType( );
-;	}
+	}
 
 	const getFormByActiveType = ( ) => {
 		switch( activeFormType ) {

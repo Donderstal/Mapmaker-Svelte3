@@ -1,28 +1,25 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	import type { ImageModel } from "../../models/ImageModel";
 	import type { MapModel } from "../../models/MapModel";
-	import type { MapObjectSpriteModel } from "../../models/MapObjectSpriteModel";
 	import type { TileModel } from "../../models/TileModel";
 
 	import { CanvasTypeEnum } from "../../enumerables/CanvasTypeEnum";
-	import { SpriteSheetAlignmentEnum } from "../../enumerables/SpriteSheetAlignmentEnum";
-	import { GRID_BLOCK_IN_SHEET_PX,MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, TILE_SIZE } from "../../resources/constants";
+	import { GRID_BLOCK_IN_SHEET_PX, TILE_SIZE } from "../../resources/constants";
 	import { Grid } from '../../canvas/Grid'
 	import { drawSpriteToTileOnCanvas, drawToFittingCanvas, mirrorOrFlipTile } from "../../helpers/canvasHelpers";
-	import { getImageModelForCharacter, getImageModelForObject, getSpriteFrame } from "../../helpers/modelConversionHelpers";
-	import type { MapObjectModel } from "../../models/MapObjectModel";
-	import type { CharacterModel } from "../../models/CharacterModel";
+	import { getSpriteFrame } from "../../helpers/modelConversionHelpers";
 	import type { Tile } from "../../canvas/Tile";
 	import type { SpriteFrameModel } from "../../models/SpriteFrameModel";
 	import { orderCanvasObjectsByCellLocation } from "../../helpers/sortHelpers";
 	import type { CanvasObjectModel } from "../../models/CanvasObjectModel";
-	import { DirectionEnum } from "../../enumerables/DirectionEnum";
 	import { user } from "../../stores";
+    import type { SpriteDataModel } from "../../models/SpriteDataModel";
+    import type { TilesheetModel } from "../../models/TilesheetModel";
+    import { DirectionEnum } from "../../enumerables/DirectionEnum";
 
 	export let canvasType : CanvasTypeEnum;
-	export let spriteModel : ImageModel = undefined;
+	export let spriteModel : SpriteDataModel = undefined;
 	export let handleCanvasClick = undefined;
 	export let registerMouseClickStart = undefined;
 	export let registerMouseClickEnd = undefined;
@@ -32,27 +29,16 @@
 	let grid : Grid;
 	let canvas : HTMLCanvasElement;
 	let invisibleCanvas : HTMLCanvasElement;
-	let context : CanvasRenderingContext2D
-	let model : MapModel
-	let sheet : ImageModel;
+	let context : CanvasRenderingContext2D;
+	let model : MapModel;
+	let sheet : TilesheetModel
 
 	let invisible : boolean = false;
 
 	onMount(() => {
 		context = canvas.getContext("2d");
 		if ( canvasType == CanvasTypeEnum.spriteCanvas ) {
-			if ( spriteModel.dataObject.hasOwnProperty("className") ) {
-				setCharacterToCanvas( spriteModel );
-			}
-			else if ( (spriteModel.dataObject as MapObjectSpriteModel).idleAnimation ) {
-				setSpriteFrameToCanvas( spriteModel );
-			}
-			else if ( (spriteModel.dataObject as MapObjectSpriteModel).dimensionalAlignment === SpriteSheetAlignmentEnum.horiVert ) {
-				setAlignedSpriteFrameToCanvas( spriteModel );
-			}
-			else {
-				setImageToCanvas( spriteModel );
-			}
+			setSpriteDataModelToCanvas( spriteModel );	
 		}
 		if ( canvasType == CanvasTypeEnum.utility ) {
 			invisibleCanvas = document.createElement("canvas");
@@ -65,20 +51,20 @@
 				return;
 			}
 			model = map;
-			sheet = Object.values($user.tilesets).filter((e)=>{return e.dataObject.key === model.tileSet})[0];
+			sheet = Object.values($user.tilesets as TilesheetModel[]).filter((e)=>{return e.key === model.tileSet})[0];
 			setSlot(slot);
 			initializeGrid( model.columns, model.rows );
 			setTileModelsToGridTiles( model.grid );
-			grid.drawTiles(context, sheet);
+			grid.drawTiles(context, sheet.image);
 
-			drawSpritesToCanvas( [ ...model.characters, ...model.mapObjects ] );
+			drawSpritesToCanvasGrid( model.sprites );
 
 			let frontGrid = new Grid( model.columns, model.rows );
 			frontGrid.setTileModelsToTiles( model.frontGrid );
-			frontGrid.drawTiles(context, sheet);
+			frontGrid.drawTiles(context, sheet.image);
 
-			drawSpritesToCanvas( [ ...model.frontCharacters, ...model.frontMapObjects ] );
-			drawBorders();
+			drawSpritesToCanvasGrid( model.frontSprites )
+;			drawBorders();
 		}
 	})
 
@@ -102,7 +88,7 @@
         context.stroke();
 		context.fillStyle = 'white';
 		context.font = 'bold 48px serif';
-		context.fillText( model.name, canvas.width -  context.measureText(model.name).width, TILE_SIZE )
+		context.fillText( model.key, canvas.width -  context.measureText(model.key).width, TILE_SIZE )
 	}
 
 	export const initializeGrid = ( columns: number, rows: number, startingIndex: number = null ): void => {
@@ -119,7 +105,7 @@
         grid = null;
 	}
 
-	export const drawTileToFittingCanvas = ( activeSheet: ImageModel, tileModel: TileModel, xy: {x: number, y: number} ): void => {
+	export const drawTileToFittingCanvas = ( activeSheet: TilesheetModel, tileModel: TileModel, xy: {x: number, y: number} ): void => {
 		mirrorOrFlipTile( activeSheet.image, tileModel, invisibleCanvas.getContext("2d"), xy );
 		canvas.width = GRID_BLOCK_IN_SHEET_PX;
 		canvas.height = GRID_BLOCK_IN_SHEET_PX;
@@ -135,36 +121,8 @@
 	export const getTileAtCell = ( column: number, row: number ): Tile => {
 		return grid.getTileAtCell( column, row );
 	}
-	
-	export const setImageToCanvas = ( image: ImageModel ) : void => {
-		drawToFittingCanvas( image, canvas, 0, 0, image.image.width, image.image.height, 0, 0);
-	}
 
-	export const setCharacterToCanvas = ( image: ImageModel, direction: DirectionEnum = DirectionEnum.down ) : void => {
-		drawToFittingCanvas( image, canvas, 0, direction * MAP_SPRITE_HEIGHT_IN_SHEET, MAP_SPRITE_WIDTH_IN_SHEET, MAP_SPRITE_HEIGHT_IN_SHEET, 0, 0);
-	}
-
-	export const setSpriteFrameToCanvas = ( image: ImageModel ) : void => {
-		const objectSpriteModel : MapObjectSpriteModel = image.dataObject as MapObjectSpriteModel;
-		const widthInSheet = objectSpriteModel.widthBlocks * GRID_BLOCK_IN_SHEET_PX;
-		const heightInSheet = objectSpriteModel.heightBlocks * GRID_BLOCK_IN_SHEET_PX;
-		drawToFittingCanvas( image, canvas, 0, 0, widthInSheet, heightInSheet, 0, 0);
-	}
-
-	export const setAlignedSpriteFrameToCanvas = ( image: ImageModel, direction: DirectionEnum = DirectionEnum.down ) : void => {
-		const objectSpriteModel : MapObjectSpriteModel = image.dataObject as MapObjectSpriteModel;
-		const widthInSheet = ((direction == DirectionEnum.down || direction == DirectionEnum.up) ? objectSpriteModel.vertWidthBlocks : objectSpriteModel.horiWidthBlocks) * GRID_BLOCK_IN_SHEET_PX;
-		const heightInSheet = ((direction == DirectionEnum.down || direction == DirectionEnum.up) ? objectSpriteModel.vertHeightBlocks : objectSpriteModel.horiHeightBlocks) * GRID_BLOCK_IN_SHEET_PX;
-		const frames : {x: number, y: number}[] = objectSpriteModel.movementFrames[direction];
-		drawToFittingCanvas( image, canvas, frames[0].x, frames[0].y, widthInSheet, heightInSheet, 0, 0);
-	}
-
-	export const setTilesetToCanvas = ( image: ImageModel, index: number, parts: number ) : void => {
-		let imageHeight = image.image.height / parts;
-		drawToFittingCanvas( image, canvas, 0, imageHeight * index, image.image.width, imageHeight, 0, 0);
-	}
-
-	export const setMapModel = ( mapModel: MapModel, tilesheet: ImageModel, isBackground: boolean ): void => {
+	export const setMapModel = ( mapModel: MapModel, tilesheet: TilesheetModel, isBackground: boolean ): void => {
 		model = mapModel;
 		sheet = tilesheet;
 		initializeGrid( model.columns, model.rows );
@@ -180,7 +138,7 @@
 	}
 
 	export const drawGridToCanvas = ( ) : void => {
-		grid.drawTiles( context, sheet );
+		grid.drawTiles( context, sheet.image );
 	}
 
 	export const fillRect = ( x:number, y:number, width:number, height:number, color:string ): void => {
@@ -194,7 +152,7 @@
 			handleCanvasClick( tile );
 		}
 		else if ( canvasType === CanvasTypeEnum.spriteCanvas ) {
-			handleCanvasClick( spriteModel.dataObject );
+			handleCanvasClick( spriteModel );
 		}
 		else if ( canvasType !== CanvasTypeEnum.overview && canvasType !== CanvasTypeEnum.utility ) {
 			const tile = grid.getTileAtXy(e.offsetX, e.offsetY);
@@ -221,31 +179,37 @@
 		invisible = false;
 	}
 
-	export const drawSpritesToCanvas = ( canvasObjects: CanvasObjectModel[]): void => {
-		console.log(model);
+	export const drawSpritesToCanvasGrid = ( canvasObjects: CanvasObjectModel[]): void => {
 		const sortedSprites = orderCanvasObjectsByCellLocation( canvasObjects );
-		sortedSprites.forEach( (model: CanvasObjectModel): void => {
-			console.log(model);
-			const tile = grid.getTileAtCell(model.column, model.row);
-			if ( model.hasOwnProperty('sprite') ) {
-				drawCharacterToCanvas( model as CharacterModel, tile );
-			}
-			else {
-				drawMapObjectToCanvas( model as MapObjectModel, tile );
-			}
-		});
+		sortedSprites.forEach(drawCanvasObjectToCanvasGrid);
 	}
 
-	const drawCharacterToCanvas = ( character: CharacterModel, tile: Tile ) : void => {
-		const imageModel : ImageModel = getImageModelForCharacter( character );
-		const spriteFrame : SpriteFrameModel = getSpriteFrame( imageModel, character.direction );
-		drawSpriteToTileOnCanvas( imageModel, canvas, spriteFrame, tile );
+	const drawCanvasObjectToCanvasGrid = (canvasObject: CanvasObjectModel): void => {
+		const tile = grid.getTileAtCell(canvasObject.column, canvasObject.row);
+		const spriteFrame : SpriteFrameModel = getSpriteFrame( canvasObject.spriteDataModel, canvasObject.direction );
+		drawSpriteToTileOnCanvas( canvasObject.spriteDataModel.image, canvas, spriteFrame, tile );
 	}
 
-	const drawMapObjectToCanvas = ( mapObject: MapObjectModel, tile: Tile ) : void => {
-		const imageModel : ImageModel = getImageModelForObject( mapObject );
-		const spriteFrame : SpriteFrameModel = getSpriteFrame( imageModel, mapObject.direction );
-		drawSpriteToTileOnCanvas( imageModel, canvas, spriteFrame, tile );
+	export const setSpriteDataModelToCanvas = (model: SpriteDataModel, direction: DirectionEnum = DirectionEnum.down ) => {
+		const frame = getSpriteFrame(model, direction);
+		try {
+			drawToFittingCanvas( model.image, canvas, frame.x, frame.y, frame.width, frame.height, 0, 0);
+		}
+		catch(ex) {
+			console.log(ex);
+			console.log(model)
+		}
+	}
+
+	export const setTilesetToCanvas = ( tileSheet: TilesheetModel, index: number, parts: number ) : void => {
+		let imageHeight = tileSheet.image.height / parts;
+		try {
+			drawToFittingCanvas( tileSheet.image, canvas, 0, imageHeight * index, tileSheet.image.width, imageHeight, 0, 0);
+		}
+		catch(ex) {
+			console.log(ex);
+			console.log(tileSheet)
+		}
 	}
 </script>
 

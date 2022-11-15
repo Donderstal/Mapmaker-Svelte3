@@ -1,13 +1,8 @@
 import type { Tile } from "../canvas/Tile";
-import type { AnimationTypeEnum } from "../enumerables/AnimationTypeEnum";
 import type { CanvasObjectModel } from "../models/CanvasObjectModel";
-import type { CharacterModel } from "../models/CharacterModel";
 import type { MapModel } from "../models/MapModel";
-import type { MapObjectModel } from "../models/MapObjectModel";
-import type { MapObjectSpriteModel } from "../models/MapObjectSpriteModel";
 import type { TileModel } from "../models/TileModel";
-import { initTileModel } from "./setUserData";
-import { getAssociatedMapObjectSpriteModel } from "./sortHelpers";
+import { initCanvasObjectModel, initTileModel } from "./modelFactory";
 
 export const addTileToMapModel = ( tile: TileModel, location: Tile, map: MapModel, front: boolean ): void => {
 	let newTileModel: TileModel = {
@@ -22,65 +17,26 @@ export const addTileToMapModel = ( tile: TileModel, location: Tile, map: MapMode
 
 export const addSpriteToMapModel = ( sprite: CanvasObjectModel, location: Tile, map: MapModel, front: boolean ): void => {
 	clearExistingSpritesAtNewSpriteLocation( sprite, location, map, front );
-	if ( !sprite.hasOwnProperty( "type" ) ) {
-		let spriteAsCharacter = sprite as CharacterModel;
-		let char: CharacterModel = {
-			animation_type: spriteAsCharacter.animation_type as AnimationTypeEnum,
-			column: location.column,
-			row: location.row,
-			direction: spriteAsCharacter.direction,
-			sprite: spriteAsCharacter.sprite,
-		}
-		front ? map.frontCharacters.push( char ) : map.characters.push( char );
-	}
-	else {
-		let spriteAsObject = sprite as MapObjectModel;
-		let obj: MapObjectModel = {
-			row: location.row,
-			column: location.column,
-			direction: spriteAsObject.direction,
-			type: spriteAsObject.type,
-		}
-		front ? map.frontMapObjects.push( obj ) : map.mapObjects.push( obj );
-	}
+	const canvasObject = initCanvasObjectModel( sprite, location );
+	front ? map.frontSprites.push( canvasObject ) : map.sprites.push( canvasObject );
 }
 
 export const clearExistingSpritesAtNewSpriteLocation = ( sprite: CanvasObjectModel, location: Tile, map: MapModel, front: boolean ): void => {
-	let spriteModel: MapObjectSpriteModel = undefined;
-	if ( sprite.hasOwnProperty( "type" ) ) {
-		spriteModel = getAssociatedMapObjectSpriteModel( sprite as MapObjectModel );
-    }
+	let spriteModel = sprite.spriteDataModel;
+	let callback: Function = null;
 
-	let newSpriteIsBackground = spriteModel === undefined ? false : spriteModel.onBackground;
-	let newSpriteIsForeground = spriteModel === undefined ? false : spriteModel.notGrounded;
-	let newSpriteIsStandard = !newSpriteIsBackground && !newSpriteIsForeground;
-
-	if ( newSpriteIsStandard ) {
-		if ( front ) {
-			map.frontCharacters = map.frontCharacters.filter( ( e ) => { return filterCharacter( e, location ) } );
-			map.frontMapObjects = map.frontMapObjects.filter( ( e ) => { return filterStandardMapObject( e, location ) } );
-		}
-		else {
-			map.characters = map.characters.filter( ( e ) => { return filterCharacter( e, location ) } );
-			map.mapObjects = map.mapObjects.filter( ( e ) => { return filterStandardMapObject( e, location ) } );
-		}
+	if ( !spriteModel.onBackground && !spriteModel.notGrounded ) {
+		callback = filterStandardMapObject;
 	}
-	else if ( newSpriteIsBackground ) {
-		if ( front ) {
-			map.frontMapObjects = map.frontMapObjects.filter( ( e ) => { return filterBackMapObject( e, location ) } );
-		}
-		else {
-			map.mapObjects = map.mapObjects.filter( ( e ) => { return filterBackMapObject( e, location ) } );
-		}
+	else if ( spriteModel.onBackground ) {
+		callback = filterBackMapObject;
 	}
 	else {
-		if ( front ) {
-			map.frontMapObjects = map.frontMapObjects.filter( ( e ) => { return filterFrontMapObject( e, location ) } );
-		}
-		else {
-			map.mapObjects = map.mapObjects.filter( ( e ) => { return filterFrontMapObject( e, location ) } );
-		}
+		callback = filterFrontMapObject;
 	}
+
+	map.frontSprites = !front ? map.frontSprites : map.frontSprites.filter( ( e ) => { return callback( e, location ) } );
+	map.sprites = front ? map.sprites : map.sprites.filter( ( e ) => { return callback( e, location ) } );
 }
 
 export const removeTileModelFromMap = ( location: Tile, map: MapModel, front: boolean ): void => {
@@ -95,30 +51,21 @@ export const removeTileModelFromMap = ( location: Tile, map: MapModel, front: bo
 
 export const removeSpriteModelFromMap = ( location: Tile, map: MapModel, front: boolean ): void => {
 	if ( front ) {
-		map.frontCharacters = map.frontCharacters.filter( ( e ) => { return !( e.column == location.column && e.row == location.row ); } );
-		map.frontMapObjects = map.frontMapObjects.filter( ( e ) => { return !( e.column == location.column && e.row == location.row ); } );
+		map.frontSprites = map.frontSprites.filter( ( e ) => { return !( e.column == location.column && e.row == location.row ); } );
 	}
 	else {
-		map.characters = map.characters.filter( ( e ) => { return !(e.column == location.column && e.row == location.row); } );
-		map.mapObjects = map.mapObjects.filter( ( e ) => { return !( e.column == location.column && e.row == location.row ); } );
+		map.sprites = map.sprites.filter( ( e ) => { return !( e.column == location.column && e.row == location.row ); } );
     }
 }
 
-const filterCharacter = ( e: CharacterModel, location: Tile ): boolean => {
-	return !( e.column == location.column && e.row == location.row )
+const filterBackMapObject = ( e: CanvasObjectModel, location: Tile ): boolean => {
+	return !( e.column == location.column && e.row == location.row && e.spriteDataModel.onBackground );
 }
 
-const filterBackMapObject = ( e: MapObjectModel, location: Tile ): boolean => {
-	let model = getAssociatedMapObjectSpriteModel( e );
-	return !( e.column == location.column && e.row == location.row && model.onBackground );
+const filterStandardMapObject = ( e: CanvasObjectModel, location: Tile ): boolean => {
+	return !( e.column == location.column && e.row == location.row && ( !e.spriteDataModel.onBackground && !e.spriteDataModel.notGrounded ) );
 }
 
-const filterStandardMapObject = ( e: MapObjectModel, location: Tile ): boolean => {
-	let model = getAssociatedMapObjectSpriteModel( e );
-	return !( e.column == location.column && e.row == location.row && ( !model.onBackground && !model.notGrounded ) );
-}
-
-const filterFrontMapObject = ( e: MapObjectModel, location: Tile ): boolean => {
-	let model = getAssociatedMapObjectSpriteModel( e );
-	return !( e.column == location.column && e.row == location.row && model.notGrounded );
+const filterFrontMapObject = ( e: CanvasObjectModel, location: Tile ): boolean => {
+	return !( e.column == location.column && e.row == location.row && e.spriteDataModel.notGrounded );
 }

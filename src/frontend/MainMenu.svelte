@@ -94,7 +94,7 @@
 		activePreviewName = event.target.value;
 
 		const map = $user.maps.filter((e)=>{return e.key === event.target.value})[0];
-		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === map.tileSet})[0];
+		const sheet = $user.tilesets.filter((e)=>{return e.key === map.tileSet})[0];
 
 		setTimeout(()=>{
 			previewMap.initializeMapMakerCanvases( map, sheet );		
@@ -105,7 +105,7 @@
 		showPreviewCanvas = true;
 		activePreviewName = event.target.value;
 
-		const sheet = $user.tilesets.filter((e)=>{return e.dataObject.key === event.target.value})[0];
+		const sheet = $user.tilesets.filter((e)=>{return e.key === event.target.value})[0];
 		setTimeout(()=>{
 			previewTilesheet.initializeTilesheetColumn( sheet );
 		}, 10)
