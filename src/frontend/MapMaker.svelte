@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import type { MapModel } from '../models/MapModel';
-	import { user } from '../stores';
+	import { onUserLogin, user } from '../stores';
 	import MapCanvasContainer from './views/MapCanvasContainer.svelte';
 	import MapTilesheetsContainer from './views/MapTilesheetsContainer.svelte';
 	import MapUiContainer from './views/MapUiContainer.svelte';
@@ -219,6 +219,7 @@
 			let object = JSON.parse(json);
 			if( object["save-map-success"] ) {
 				alert("Map saved!");
+				onUserLogin();
 				return;
 			}
 			console.log(getJsonFromMapModel(activeMap))

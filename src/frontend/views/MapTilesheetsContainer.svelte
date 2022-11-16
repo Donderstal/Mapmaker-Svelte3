@@ -17,14 +17,22 @@
 		[tilesheetCanvasLeft, tilesheetCanvasRight].forEach((e)=>{e.clearGrid()});
 		activeSheet = activeSheetModel;
 
-		const tilesheetCanvases = [tilesheetCanvasLeft, tilesheetCanvasRight]
-		const gridRows = (activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX) / tilesheetCanvases.length;
-		const tilesInSheetGrid = ( gridRows * 4 );
-		tilesheetCanvases.forEach((e, index)=>{
-			e.initializeGrid( 4, gridRows, tilesInSheetGrid * index );
-			e.setTilesetToCanvas( activeSheet, index, tilesheetCanvases.length );
-			e.drawTileBordersToCanvas( );
-		})
+		if ( activeSheet.image.height > window.innerHeight ) {
+			const tilesheetCanvases = [tilesheetCanvasLeft, tilesheetCanvasRight]
+			const gridRows = (activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX) / tilesheetCanvases.length;
+			const tilesInSheetGrid = ( gridRows * 4 );
+			tilesheetCanvases.forEach((e, index)=>{
+				e.initializeGrid( 4, gridRows, tilesInSheetGrid * index );
+				e.setTilesetToCanvas( activeSheet, index, tilesheetCanvases.length );
+				e.drawTileBordersToCanvas( );
+			})
+		}
+		else {
+			const gridRows = activeSheet.image.height / GRID_BLOCK_IN_SHEET_PX;
+			tilesheetCanvasLeft.initializeGrid( 4, gridRows );
+			tilesheetCanvasLeft.setTilesetToCanvas( activeSheet, 0, 1 );
+			tilesheetCanvasLeft.drawTileBordersToCanvas( );
+		}
 	}
 
 	const handleCanvasClick = ( tile: Tile ) => {

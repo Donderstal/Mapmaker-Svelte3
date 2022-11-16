@@ -1,8 +1,10 @@
-<script>
-	import { user } from '../../stores.ts'
+<script lang="ts">
+	import { user } from '../../stores'
 	export let optionListener;
 	export let visible;
-	let mapInput;
+
+	let mapInput: HTMLSelectElement;
+	let emptyValue = "EMPTY";
 	let splitMaps = {};
 	let noLocationMaps = [];
 
@@ -10,6 +12,10 @@
         console.log(mapInput.value)
 		return mapInput.value;
     }
+
+	export const checkIfFormIsValid = (): boolean => {
+		return mapInput.value !== emptyValue
+	}
 
 	const splitMapsOnLocations = ( ) => {
 		$user.maps.forEach((e)=>{
@@ -35,7 +41,7 @@
 <div class:invisible={!visible}>
 	<label for="load-map-select">Choose a map to load:</label>
 	<select name="load-map-select" bind:this={mapInput} on:change={optionListener}>
-		<option hidden disabled selected value> -- select a map -- </option>
+		<option hidden disabled selected value="{emptyValue}"> -- select a map -- </option>
 		{#each Object.keys(splitMaps) as locationKey}
 			<optgroup label={locationKey}>
 				{#each splitMaps[locationKey] as map}

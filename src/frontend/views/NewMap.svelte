@@ -20,10 +20,15 @@
             "tilesheet": tilesheetInput.value
         }
     }
+    const tileSets: TilesheetModel[] = Object.values($user.tilesets as {[key in string]: TilesheetModel});
+    const outdoorSheets = tileSets.filter((e)=>{return e.category === TilesheetTypeEnum.outdoors});
+    const indoorSheets = tileSets.filter((e)=>{return e.category === TilesheetTypeEnum.indoors});
+    const obsoleteSheets  = tileSets.filter((e)=>{return e.category === TilesheetTypeEnum.obsolete});
 
-    const outdoorSheets = Object.values($user.tilesets).filter((e: TilesheetModel)=>{return e.category === TilesheetTypeEnum.outdoors});
-    const indoorSheets = Object.values($user.tilesets).filter((e: TilesheetModel)=>{return e.category === TilesheetTypeEnum.indoors});
-    const obsoleteSheets  = Object.values($user.tilesets).filter((e: TilesheetModel)=>{return e.category === TilesheetTypeEnum.obsolete});
+    export const checkIfFormIsValid = (): boolean => {
+		return nameInput.getInputValue() && columnsInput.getInputValue() && rowsInput.getInputValue() 
+        && tilesheetInput.value !== "EMPTY";
+	}
 </script>
 <style>
     .invisible {
@@ -33,23 +38,23 @@
 </style>
 <div class:invisible={!visible}>
 	<InputDiv
-        bind:this={nameInput}
+        bind:this={nameInput} onInputKeyUp={false}
 	    inputName={"name-input"} placeholder={"Name your map:"} type={"text"} labelText={"Map name:"}
         onChange={false} showWarning={false} warningText={""}
 	/>
-    <InputDiv 
+    <InputDiv  onInputKeyUp={false}
         bind:this={columnsInput}
         inputName={"columns-input"} placeholder={"Max columns: 24"} type={"number"} labelText={"Columns:"}
         onChange={false} showWarning={false} warningText={""}
     />
-    <InputDiv 
+    <InputDiv  onInputKeyUp={false}
         bind:this={rowsInput}
         inputName={"rows-input"} placeholder={"Max rows: 16"} type={"number"} labelText={"Rows:"}
         onChange={false} showWarning={false} warningText={""}
     />
     <label for="tilesheet-select">Choose a tilesheet:</label>
 	<select name="tilesheet-select" bind:this={tilesheetInput} on:change={optionListener}>
-        <option hidden disabled selected value> -- select a tilesheet -- </option>
+        <option hidden disabled selected value="EMPTY"> -- select a tilesheet -- </option>
         <optgroup label="Outdoor sheets">
             {#each outdoorSheets as outdoorSheet}
                 <option value="{outdoorSheet.key}">{outdoorSheet.key}</option>

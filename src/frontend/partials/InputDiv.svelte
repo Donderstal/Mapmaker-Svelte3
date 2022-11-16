@@ -10,6 +10,7 @@
     export let onChange;
     export let showWarning;
     export let warningText;
+    export let onInputKeyUp
 
     let input;
 
@@ -23,7 +24,7 @@
 
 <div>
     <Label text={labelText} labelFor={inputName}/>
-    <Input bind:this={input} inputName={inputName} placeholder={placeholder} type={type} onChange={onChange}/>
+    <Input bind:this={input} onKeyUp={onInputKeyUp} inputName={inputName} placeholder={placeholder} type={type} onChange={onChange}/>
     {#if showWarning}
         <br/>
         <FormWarning text={warningText} />

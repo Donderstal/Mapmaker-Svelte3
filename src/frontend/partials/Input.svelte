@@ -3,6 +3,7 @@
     export let type;
     export let placeholder;
     export let onChange;
+    export let onKeyUp;
 
     let input;
 
@@ -24,4 +25,4 @@
     }
 </style>
 
-<input bind:this={input} type={type} placeholder={placeholder} name={inputName} on:input={onChange}/>
+<input bind:this={input} on:keyup={onKeyUp} type={type} placeholder={placeholder} name={inputName} on:input={onChange}/>

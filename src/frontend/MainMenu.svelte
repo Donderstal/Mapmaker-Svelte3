@@ -110,6 +110,10 @@
 			previewTilesheet.initializeTilesheetColumn( sheet );
 		}, 10)
 	}
+
+	const validateForm = () =>{
+		return activeForm.checkIfFormIsValid();
+	}
 </script>
 <style>
 	.container {
@@ -201,7 +205,9 @@
 		<SelectOverview bind:this={mapOverviewMenu} visible={showMapOverviewMenu} optionListener={getSelectedOption}/>
 		{#if activeForm !== false}
 			<Button inputName={"Lets_go_button"} action={() => {
-				getFormOptions( );
+				if ( validateForm( ) ) {
+					getFormOptions( );
+				}
 			}} buttonText={"Let's go!"}/>
 		{/if}
 	</div>

@@ -52,7 +52,7 @@ export const initCanvasObjectModel = ( canvasObject: { [key in string]: any }, t
         row: tile != null ? tile.row : canvasObject.row,
         column: tile != null ? tile.column : canvasObject.column != null ? canvasObject.column : canvasObject.col,
         spriteDataModel: spriteDataModel,
-        direction: canvasObject["direction"] !== undefined ? canvasObject["direction"] : DirectionEnum.down,
+        direction: canvasObject["direction"] !== undefined ? correctDirection( canvasObject["direction"] ) : DirectionEnum.down,
         hasDoor: canvasObject["door"] !== undefined
     }
     return model;
@@ -168,7 +168,7 @@ export const initTileModel = ( tileData ): TileModel => {
 
 const initRoadModel = ( roadData ): RoadModel => {
     const roadModel: RoadModel = {
-        direction: roadData.direction,
+        direction: correctDirection( roadData.direction),
         alignment: roadData.alignment,
         hasStart: roadData.hasStart,
 
@@ -201,7 +201,7 @@ const initSpawnPointModel = ( spawnPointData ): SpawnPointModel => {
     const spawnPointModel: SpawnPointModel = {
         row: spawnPointData.row,
         column: spawnPointData.column == undefined ? spawnPointData.col : spawnPointData.column,
-        direction: spawnPointData.direction
+        direction: correctDirection( spawnPointData.direction)
     };
     return spawnPointModel;
 }
@@ -211,7 +211,23 @@ const initDoorModel = ( doorData ): DoorModel => {
         row: doorData.row,
         column: doorData.column == undefined ? doorData.col : doorData.column,
         destination: doorData.destination,
-        direction: doorData.direction
+        direction: correctDirection(doorData.direction)
     };
     return doorModel;
+}
+
+const correctDirection = (direction) => {
+    if ( direction === "FACING_DOWN" ) {
+        return DirectionEnum.down;
+    }
+    if ( direction === "FACING_LEFT" ) {
+        return DirectionEnum.left;
+    }
+    if ( direction === "FACING_UP" ) {
+        return DirectionEnum.up;
+    }
+    if ( direction === "FACING_RIGHT" ) {
+        return DirectionEnum.right;
+    }
+    return direction
 }

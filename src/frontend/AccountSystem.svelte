@@ -168,22 +168,22 @@
 	<div class="right-item">
 		<Form
 			bind:this={logInForm}
-			visible={showLogIn}
+			visible={showLogIn} onConfirm={handleButtonClick}
 			formType={AccountScreenEnum.loggingIn}
 		/>
 		<Form
 			bind:this={validateForm}
-			visible={showValidate}
+			visible={showValidate} onConfirm={handleButtonClick}
 			formType={AccountScreenEnum.validating}
 		/>
 		<Form
 			bind:this={registerForm}
-			visible={showRegister}
+			visible={showRegister} onConfirm={handleButtonClick}
 			formType={AccountScreenEnum.registering}
 		/>
 		<Form
 			bind:this={resetPasswordForm}
-			visible={showResetPassword}
+			visible={showResetPassword} onConfirm={handleButtonClick}
 			formType={AccountScreenEnum.resettingPassword}
 		/>
 		{#if invalidForm} 

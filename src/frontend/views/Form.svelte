@@ -4,6 +4,7 @@
 
     export let visible;
     export let formType;
+    export let onConfirm;
 
     const emailRegex = /\S+@\S+\.\S+/;
     let form;
@@ -147,6 +148,11 @@
     export const resetActivationCodeValue = ( ) => {
         activationCodeInput.resetInputValue( );
     }
+    const onFormKeyUp = (e) =>{
+        if (event.keyCode === 13) {
+            onConfirm();
+        }
+    }
 </script>
 <style>
     .invisible {
@@ -157,47 +163,47 @@
 <form bind:this={form} class:invisible={!visible}>
     {#if formType === AccountScreenEnum.registering}
         <InputDiv 
-            bind:this={usernameInput}
+            bind:this={usernameInput} onInputKeyUp={onFormKeyUp}
             inputName={"username-input"} placeholder={"Get a cheeky username."} type={"text"} labelText={"Username:"}
             onChange={onUsernameChange} showWarning={showUsernameWarning} warningText={"Your username must be at least 3 characters long"}
         />
         <InputDiv 
-            bind:this={emailInput}
+            bind:this={emailInput} onInputKeyUp={onFormKeyUp}
             inputName={"email-input"} placeholder={"Fill in your email address."} type={"email"} labelText={"Email:"}
             onChange={onEmailAddressChange} showWarning={showEmailWarning} warningText={"This is not a valid email address"}
         />
         <InputDiv
-            bind:this={passwordInput}
+            bind:this={passwordInput} onInputKeyUp={onFormKeyUp}
             inputName={"password-input"} placeholder={"Think of a good password."} type={"password"} labelText={"Password:"} 
             onChange={onPasswordChange} showWarning={showPasswordWarning} warningText={"Your password must be at least 8 characters long."}
         />
         <InputDiv 
-            bind:this={passwordConfirmInput}
+            bind:this={passwordConfirmInput} onInputKeyUp={onFormKeyUp}
             inputName={"password-confirmation-input"} placeholder={"Repeat your password."} type={"password"} labelText={"Repeat password:"} 
             onChange={onPasswordConfirmChange} showWarning={showConfirmPasswordWarning} warningText={"The passwords you inputted do not match."}
         />
     {:else}
         <InputDiv 
-            bind:this={usernameInput}
+            bind:this={usernameInput} onInputKeyUp={onFormKeyUp}
             inputName={"username-input"} placeholder={"Fill in your username"} type={"text"} labelText={"Username:"}
             onChange={onUsernameChange} showWarning={false} warningText={""}
         />
         {#if formType === AccountScreenEnum.loggingIn || formType === AccountScreenEnum.validating }
             <InputDiv 
-                bind:this={passwordInput}
+                bind:this={passwordInput} onInputKeyUp={onFormKeyUp}
                 inputName={"password-input"} placeholder={"Fill in your password"} type={"password"} labelText={"Password:"}
                 onChange={onPasswordChange} showWarning={false} warningText={""}
         />
         {/if}
         {#if formType === AccountScreenEnum.validating }
             <InputDiv 
-                bind:this={activationCodeInput}
+                bind:this={activationCodeInput} onInputKeyUp={onFormKeyUp}
                 inputName={"activation-code-input"} placeholder={"Fill in your code"} type={"text"} labelText={"Activation code:"}
                 onChange={onActivationCodeChange} showWarning={false} warningText={""}
             />
         {:else if formType === AccountScreenEnum.resettingPassword }
             <InputDiv 
-                bind:this={emailInput}
+                bind:this={emailInput} onInputKeyUp={onFormKeyUp}
                 inputName={"email-input"} placeholder={"Fill in your email address."} type={"email"} labelText={"Email:"}
                 onChange={onEmailAddressChange} showWarning={showEmailWarning} warningText={"This is not a valid email address"}
             />
